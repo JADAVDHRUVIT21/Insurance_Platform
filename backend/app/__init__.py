@@ -10,6 +10,7 @@ from app.models.company import Company
 from app.routes.auth import auth_bp
 from app.routes.customer import customer_bp
 from app.routes.company import company_bp
+from app.routes.policy import policy_bp
 
 def create_app():
     app = Flask(__name__)
@@ -28,6 +29,7 @@ def create_app():
     app.register_blueprint(auth_bp)
     app.register_blueprint(customer_bp)
     app.register_blueprint(company_bp)
+    app.register_blueprint(policy_bp)
 
     # Home Route
     @app.route("/")

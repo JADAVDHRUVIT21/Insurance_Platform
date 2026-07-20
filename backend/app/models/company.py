@@ -20,6 +20,13 @@ class Company(db.Model):
 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+    policies = db.relationship(
+        "Policy",
+        backref="company",
+        lazy=True,
+        cascade="all, delete-orphan"
+    )
+
     def to_dict(self):
         return {
             "id": self.id,
