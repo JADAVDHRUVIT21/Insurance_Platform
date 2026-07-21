@@ -22,7 +22,7 @@ class Company(db.Model):
 
     policies = db.relationship(
         "Policy",
-        backref="company",
+        back_populates="company",
         lazy=True,
         cascade="all, delete-orphan"
     )

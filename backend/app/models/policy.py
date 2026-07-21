@@ -17,32 +17,22 @@ class Policy(db.Model):
     )
 
     policy_type = db.Column(db.String(50))
-
     sum_assured = db.Column(db.Float)
-
     premium_amount = db.Column(db.Float)
-
     premium_frequency = db.Column(db.String(30))
-
     policy_term = db.Column(db.Integer)
-
     maturity_age = db.Column(db.Integer)
-
     min_entry_age = db.Column(db.Integer)
-
     max_entry_age = db.Column(db.Integer)
 
-    status = db.Column(
-        db.String(20),
-        default="Active"
-    )
+    status = db.Column(db.String(20), default="Active")
 
-    created_at = db.Column(
-        db.DateTime,
-        default=datetime.utcnow
-    )
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    company = db.relationship("Company", backref="policies")
+    company = db.relationship(
+        "Company",
+        back_populates="policies"
+    )
 
     def to_dict(self):
         return {
@@ -59,4 +49,4 @@ class Policy(db.Model):
             "min_entry_age": self.min_entry_age,
             "max_entry_age": self.max_entry_age,
             "status": self.status
-        }
+        }   
