@@ -23,8 +23,8 @@ class Company(db.Model):
     policies = db.relationship(
         "Policy",
         back_populates="company",
-        lazy=True,
-        cascade="all, delete-orphan"
+        cascade="all, delete-orphan",
+        lazy=True
     )
 
     def to_dict(self):

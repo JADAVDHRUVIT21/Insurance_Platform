@@ -22,6 +22,16 @@ def create_policy():
             "message": "Company not found"
         }, 404
 
+    existing = Policy.query.filter_by(
+        policy_number=data["policy_number"]
+    ).first()
+
+    if existing:
+        return {
+            "status": "error",
+            "message": "Policy number already exists"
+        }, 409
+
     policy = Policy(
         policy_number=data["policy_number"],
         policy_name=data["policy_name"],
@@ -49,14 +59,10 @@ def create_policy():
 
 @policy_bp.route("/", methods=["GET"])
 def get_policies():
-
     policies = Policy.query.all()
 
     return {
         "status": "success",
         "count": len(policies),
-        "policies": [
-            policy.to_dict()
-            for policy in policies
-        ]
-    }
+        "policies": [policy.to_dict() for policy in policies]
+    }   
