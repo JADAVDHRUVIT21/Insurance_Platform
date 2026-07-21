@@ -65,4 +65,71 @@ def get_policies():
         "status": "success",
         "count": len(policies),
         "policies": [policy.to_dict() for policy in policies]
-    }   
+    }
+
+
+@policy_bp.route("/<int:policy_id>", methods=["GET"])
+def get_policy(policy_id):
+    policy = Policy.query.get(policy_id)
+
+    if not policy:
+        return {
+            "status": "error",
+            "message": "Policy not found"
+        }, 404
+
+    return {
+        "status": "success",
+        "policy": policy.to_dict()
+    }
+
+
+@policy_bp.route("/<int:policy_id>", methods=["PUT"])
+def update_policy(policy_id):
+    policy = Policy.query.get(policy_id)
+
+    if not policy:
+        return {
+            "status": "error",
+            "message": "Policy not found"
+        }, 404
+
+    data = request.get_json()
+
+    policy.policy_name = data.get("policy_name", policy.policy_name)
+    policy.policy_type = data.get("policy_type", policy.policy_type)
+    policy.sum_assured = data.get("sum_assured", policy.sum_assured)
+    policy.premium_amount = data.get("premium_amount", policy.premium_amount)
+    policy.premium_frequency = data.get("premium_frequency", policy.premium_frequency)
+    policy.policy_term = data.get("policy_term", policy.policy_term)
+    policy.maturity_age = data.get("maturity_age", policy.maturity_age)
+    policy.min_entry_age = data.get("min_entry_age", policy.min_entry_age)
+    policy.max_entry_age = data.get("max_entry_age", policy.max_entry_age)
+    policy.status = data.get("status", policy.status)
+
+    db.session.commit()
+
+    return {
+        "status": "success",
+        "message": "Policy updated successfully",
+        "policy": policy.to_dict()
+    }
+
+
+@policy_bp.route("/<int:policy_id>", methods=["DELETE"])
+def delete_policy(policy_id):
+    policy = Policy.query.get(policy_id)
+
+    if not policy:
+        return {
+            "status": "error",
+            "message": "Policy not found"
+        }, 404
+
+    db.session.delete(policy)
+    db.session.commit()
+
+    return {
+        "status": "success",
+        "message": "Policy deleted successfully"
+    }
