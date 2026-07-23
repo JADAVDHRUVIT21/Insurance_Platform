@@ -33,6 +33,8 @@ from app.models.doctor import Doctor
 from app.routes.doctor import doctor_bp
 from app.models.medicine import Medicine
 from app.routes.medicine import medicine_bp
+from app.models.appointment import Appointment
+from app.routes.appointment import appointment_bp
 
 def create_app():
     app = Flask(__name__)
@@ -64,6 +66,7 @@ def create_app():
     app.register_blueprint(hospital_bp)
     app.register_blueprint(doctor_bp)
     app.register_blueprint(medicine_bp)
+    app.register_blueprint(appointment_bp)
 
     @app.route("/")
     def home():
