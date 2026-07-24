@@ -3,14 +3,8 @@ from flask import Flask
 from app.config import Config
 from app.extensions import db, migrate, jwt, bcrypt, cors
 
-# Import Models
-from app.models.user import User
-from app.models.customer import Customer
-from app.models.company import Company
-from app.models.policy import Policy
-from app.models.customer_policy import CustomerPolicy
-from app.models.claim import Claim
-from app.models.premium_payment import PremiumPayment
+# Import ALL models
+import app.models
 
 # Import Blueprints
 from app.routes.auth import auth_bp
@@ -22,27 +16,24 @@ from app.routes.claim import claim_bp
 from app.routes.premium_payment import premium_payment_bp
 from app.routes.dashboard import dashboard_bp
 from app.routes.reports import reports_bp
-from app.models.notification import Notification
 from app.routes.notification import notification_bp
 from app.routes.search import search_bp
 from app.routes.profile import profile_bp
 from app.routes.upload import upload_bp
-from app.models.hospital import Hospital
 from app.routes.hospital import hospital_bp
-from app.models.doctor import Doctor
 from app.routes.doctor import doctor_bp
-from app.models.medicine import Medicine
 from app.routes.medicine import medicine_bp
-from app.models.appointment import Appointment
 from app.routes.appointment import appointment_bp
+from app.routes.medical_record import medical_record_bp
+
 
 def create_app():
     app = Flask(__name__)
 
-    # Load configuration
+    # Configuration
     app.config.from_object(Config)
 
-    # Initialize extensions
+    # Initialize Extensions
     db.init_app(app)
     migrate.init_app(app, db)
     jwt.init_app(app)
@@ -67,6 +58,7 @@ def create_app():
     app.register_blueprint(doctor_bp)
     app.register_blueprint(medicine_bp)
     app.register_blueprint(appointment_bp)
+    app.register_blueprint(medical_record_bp)
 
     @app.route("/")
     def home():
