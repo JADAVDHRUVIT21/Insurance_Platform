@@ -12,3 +12,5 @@ from .doctor import Doctor
 from .medicine import Medicine
 from .appointment import Appointment
 from .medical_record import MedicalRecord
+from .document import Document
+from .payment import Payment

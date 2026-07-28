@@ -1,15 +1,22 @@
 from flask import Flask
 
 from app.config import Config
-from app.extensions import db, migrate, jwt, bcrypt, cors
+from app.extensions import (
+    db,
+    migrate,
+    jwt,
+    bcrypt,
+    cors,
+    swagger
+)
 
-# Import ALL models
+# Import all models
 import app.models
 
 # Import Blueprints
 from app.routes.auth import auth_bp
-from app.routes.customer import customer_bp
 from app.routes.company import company_bp
+from app.routes.customer import customer_bp
 from app.routes.policy import policy_bp
 from app.routes.customer_policy import customer_policy_bp
 from app.routes.claim import claim_bp
@@ -25,31 +32,45 @@ from app.routes.doctor import doctor_bp
 from app.routes.medicine import medicine_bp
 from app.routes.appointment import appointment_bp
 from app.routes.medical_record import medical_record_bp
+from app.routes.payment import payment_bp
+from app.routes.document import document_bp
+from app.routes.claim_approval import claim_approval_bp
+from app.routes.admin_dashboard import admin_dashboard_bp
+
+from app.middleware.error_handler import register_error_handlers
 
 
 def create_app():
     app = Flask(__name__)
 
+    # -----------------------------
     # Configuration
+    # -----------------------------
     app.config.from_object(Config)
 
-    # Initialize Extensions
+    # -----------------------------
+    # Extensions
+    # -----------------------------
     db.init_app(app)
     migrate.init_app(app, db)
     jwt.init_app(app)
     bcrypt.init_app(app)
     cors.init_app(app)
 
+    swagger.init_app(app)
+
+    # -----------------------------
     # Register Blueprints
+    # -----------------------------
     app.register_blueprint(auth_bp)
-    app.register_blueprint(customer_bp)
     app.register_blueprint(company_bp)
+    app.register_blueprint(customer_bp)
     app.register_blueprint(policy_bp)
     app.register_blueprint(customer_policy_bp)
     app.register_blueprint(claim_bp)
     app.register_blueprint(premium_payment_bp)
     app.register_blueprint(dashboard_bp)
-    app.register_blueprint(reports_bp, url_prefix="/api/reports")
+    app.register_blueprint(reports_bp)
     app.register_blueprint(notification_bp)
     app.register_blueprint(search_bp)
     app.register_blueprint(profile_bp)
@@ -59,6 +80,16 @@ def create_app():
     app.register_blueprint(medicine_bp)
     app.register_blueprint(appointment_bp)
     app.register_blueprint(medical_record_bp)
+    app.register_blueprint(payment_bp)
+    app.register_blueprint(document_bp)
+    app.register_blueprint(claim_approval_bp)
+    app.register_blueprint(admin_dashboard_bp)
+    
+
+    # -----------------------------
+    # Error Handlers
+    # -----------------------------
+    register_error_handlers(app)
 
     @app.route("/")
     def home():

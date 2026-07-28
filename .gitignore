@@ -1,0 +1,67 @@
+# ======================
+# FRONTEND (React/Vite)
+# ======================
+
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Environment files
+frontend/.env
+frontend/.env.local
+
+
+# ======================
+# BACKEND (Python)
+# ======================
+
+backend/venv/
+backend/.venv/
+
+__pycache__/
+*.py[cod]
+
+*.log
+
+# Environment variables
+backend/.env
+
+
+# ======================
+# DATABASE
+# ======================
+
+*.sqlite
+*.db
+
+
+# ======================
+# IDE
+# ======================
+
+.vscode/
+.idea/
+
+
+# ======================
+# OS FILES
+# ======================
+
+.DS_Store
+Thumbs.db
+
+
+# ======================
+# Python cache
+# ======================
+
+*.egg-info/
+.pytest_cache/
+
+
+# ======================
+# Build files
+# ======================
+
+dist/
+build/
