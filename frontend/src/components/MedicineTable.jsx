@@ -1,5 +1,5 @@
-export default function DoctorTable({
-  doctors,
+export default function MedicineTable({
+  medicines,
   onEdit,
   onDelete
 }) {
@@ -22,7 +22,7 @@ export default function DoctorTable({
           marginBottom: "20px"
         }}
       >
-        Doctors List
+        Medicine List
       </h2>
 
       <table
@@ -40,31 +40,35 @@ export default function DoctorTable({
             <th style={{ padding: "12px" }}>ID</th>
 
             <th style={{ padding: "12px" }}>
-              Doctor Name
+              Medicine Name
             </th>
 
             <th style={{ padding: "12px" }}>
-              Doctor Code
+              Medicine Code
             </th>
 
             <th style={{ padding: "12px" }}>
-              Specialization
+              Category
             </th>
 
             <th style={{ padding: "12px" }}>
-              Qualification
+              Manufacturer
             </th>
 
             <th style={{ padding: "12px" }}>
-              Experience
+              Batch No.
             </th>
 
             <th style={{ padding: "12px" }}>
-              Consultation Fee
+              Expiry Date
             </th>
 
             <th style={{ padding: "12px" }}>
-              Phone
+              Unit Price
+            </th>
+
+            <th style={{ padding: "12px" }}>
+              Stock
             </th>
 
             <th style={{ padding: "12px" }}>
@@ -77,64 +81,68 @@ export default function DoctorTable({
 
         <tbody>
 
-          {doctors.length === 0 ? (
+          {medicines.length === 0 ? (
 
             <tr>
 
               <td
-                colSpan="9"
+                colSpan="10"
                 style={{
                   textAlign: "center",
                   padding: "20px"
                 }}
               >
-                No Doctors Found
+                No Medicines Found
               </td>
 
             </tr>
 
           ) : (
 
-            doctors.map((doctor) => (
+            medicines.map((medicine) => (
 
-              <tr key={doctor.id}>
+              <tr key={medicine.id}>
 
                 <td style={{ padding: "12px" }}>
-                  {doctor.id}
+                  {medicine.id}
                 </td>
 
                 <td style={{ padding: "12px" }}>
-                  {doctor.doctor_name}
+                  {medicine.medicine_name}
                 </td>
 
                 <td style={{ padding: "12px" }}>
-                  {doctor.doctor_code}
+                  {medicine.medicine_code}
                 </td>
 
                 <td style={{ padding: "12px" }}>
-                  {doctor.specialization}
+                  {medicine.category}
                 </td>
 
                 <td style={{ padding: "12px" }}>
-                  {doctor.qualification}
+                  {medicine.manufacturer}
                 </td>
 
                 <td style={{ padding: "12px" }}>
-                  {doctor.experience} Years
+                  {medicine.batch_number}
                 </td>
 
                 <td style={{ padding: "12px" }}>
-                  ₹{doctor.consultation_fee}
+                  {medicine.expiry_date}
                 </td>
 
                 <td style={{ padding: "12px" }}>
-                  {doctor.phone}
+                  ₹{medicine.unit_price}
+                </td>
+
+                <td style={{ padding: "12px" }}>
+                  {medicine.stock_quantity}
                 </td>
 
                 <td style={{ padding: "12px" }}>
 
                   <button
-                    onClick={() => onEdit(doctor)}
+                    onClick={() => onEdit(medicine)}
                     style={{
                       background: "#2563eb",
                       color: "white",
@@ -148,7 +156,7 @@ export default function DoctorTable({
                   </button>
 
                   <button
-                    onClick={() => onDelete(doctor.id)}
+                    onClick={() => onDelete(medicine.id)}
                     style={{
                       marginLeft: "10px",
                       background: "#dc2626",
