@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API = `/auth`;
+const API = `${import.meta.env.VITE_BASE_URL}/auth`;
 
 // ==============================
 // Login
@@ -8,24 +8,24 @@ const API = `/auth`;
 
 export const login = async (credentials) => {
 
-const res = await axios.post(
-  API + "/login",
-  credentials
-);
+  const res = await axios.post(
+    API + "/login",
+    credentials
+  );
 
-// Save token
-localStorage.setItem(
-  "token",
-  res.data.token
-);
+  // Save token
+  localStorage.setItem(
+    "token",
+    res.data.token
+  );
 
-// Save user
-localStorage.setItem(
-  "user",
-  JSON.stringify(res.data.user)
-);
+  // Save user
+  localStorage.setItem(
+    "user",
+    JSON.stringify(res.data.user)
+  );
 
-return res.data;
+  return res.data;
 
 };
 
@@ -35,12 +35,12 @@ return res.data;
 
 export const register = async (userData) => {
 
-const res = await axios.post(
-  API + "/register",
-  userData
-);
+  const res = await axios.post(
+    API + "/register",
+    userData
+  );
 
-return res.data;
+  return res.data;
 
 };
 
@@ -50,8 +50,8 @@ return res.data;
 
 export const logout = () => {
 
-localStorage.removeItem("token");
-localStorage.removeItem("user");
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
 
 };
 
@@ -60,7 +60,7 @@ localStorage.removeItem("user");
 // ==============================
 
 export const getToken = () => {
-return localStorage.getItem("token");
+  return localStorage.getItem("token");
 };
 
 // ==============================
@@ -69,8 +69,8 @@ return localStorage.getItem("token");
 
 export const getCurrentUser = () => {
 
-const user = localStorage.getItem("user");
+  const user = localStorage.getItem("user");
 
-return user ? JSON.parse(user) : null;
+  return user ? JSON.parse(user) : null;
 
 };
