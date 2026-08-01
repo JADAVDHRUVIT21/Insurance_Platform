@@ -1,41 +1,48 @@
 export default function PolicyCard({
-  title,
-  value,
-  color = "#2563eb"
+  totalPolicies,
+  activeCount,
+  expiredCount
 }) {
+
+  const cardStyle = (bg) => ({
+    background: bg,
+    color: "white",
+    padding: "20px",
+    borderRadius: "12px",
+    textAlign: "center",
+    flex: 1,
+    minWidth: "220px",
+    boxShadow: "0 4px 10px rgba(0,0,0,0.2)"
+  });
+
   return (
+
     <div
       style={{
-        background: color,
-        color: "#fff",
-        borderRadius: "12px",
-        padding: "20px",
-        minHeight: "110px",
         display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        boxShadow: "0 5px 15px rgba(0,0,0,0.2)"
+        gap: "20px",
+        marginBottom: "30px",
+        flexWrap: "wrap"
       }}
     >
-      <h3
-        style={{
-          margin: 0,
-          fontSize: "16px",
-          fontWeight: "500"
-        }}
-      >
-        {title}
-      </h3>
 
-      <h1
-        style={{
-          marginTop: "12px",
-          marginBottom: 0,
-          fontSize: "32px"
-        }}
-      >
-        {value}
-      </h1>
+      <div style={cardStyle("#2563eb")}>
+        <h3>Total Policies</h3>
+        <h1>{totalPolicies}</h1>
+      </div>
+
+      <div style={cardStyle("#16a34a")}>
+        <h3>Active Policies</h3>
+        <h1>{activeCount}</h1>
+      </div>
+
+      <div style={cardStyle("#dc2626")}>
+        <h3>Expired Policies</h3>
+        <h1>{expiredCount}</h1>
+      </div>
+
     </div>
+
   );
+
 }

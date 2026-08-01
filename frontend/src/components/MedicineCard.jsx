@@ -1,77 +1,63 @@
-export default function MedicineCard({
-  totalMedicines,
-  totalStock,
-  totalManufacturers,
-  lowStockCount
-}) {
+export default function MedicineCard({ medicines }) {
+
+  const totalMedicines = medicines.length;
+
+  const totalStock = medicines.reduce(
+    (sum, medicine) => sum + Number(medicine.stock_quantity || 0),
+    0
+  );
+
+  const manufacturers = new Set(
+    medicines.map((medicine) => medicine.manufacturer)
+  ).size;
+
+  const lowStock = medicines.filter(
+    (medicine) => Number(medicine.stock_quantity) < 10
+  ).length;
+
+  const cardStyle = {
+    background: "#1f2937",
+    color: "white",
+    padding: "20px",
+    borderRadius: "12px",
+    textAlign: "center",
+    minWidth: "220px",
+    flex: "1"
+  };
+
   return (
+
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+        gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))",
         gap: "20px",
         marginBottom: "30px"
       }}
     >
-      <div
-        style={{
-          background: "#1f2937",
-          padding: "20px",
-          borderRadius: "12px",
-          textAlign: "center",
-          color: "white"
-        }}
-      >
-        <h3 style={{ fontSize: "14px", opacity: 0.7 }}>Total Medicines</h3>
-        <p style={{ fontSize: "28px", fontWeight: "bold", margin: "10px 0" }}>
-          {totalMedicines}
-        </p>
+
+      <div style={cardStyle}>
+        <h3>Total Medicines</h3>
+        <h1>{totalMedicines}</h1>
       </div>
 
-      <div
-        style={{
-          background: "#1f2937",
-          padding: "20px",
-          borderRadius: "12px",
-          textAlign: "center",
-          color: "white"
-        }}
-      >
-        <h3 style={{ fontSize: "14px", opacity: 0.7 }}>Total Stock</h3>
-        <p style={{ fontSize: "28px", fontWeight: "bold", margin: "10px 0" }}>
-          {totalStock}
-        </p>
+      <div style={cardStyle}>
+        <h3>Total Stock</h3>
+        <h1>{totalStock}</h1>
       </div>
 
-      <div
-        style={{
-          background: "#1f2937",
-          padding: "20px",
-          borderRadius: "12px",
-          textAlign: "center",
-          color: "white"
-        }}
-      >
-        <h3 style={{ fontSize: "14px", opacity: 0.7 }}>Manufacturers</h3>
-        <p style={{ fontSize: "28px", fontWeight: "bold", margin: "10px 0" }}>
-          {totalManufacturers}
-        </p>
+      <div style={cardStyle}>
+        <h3>Manufacturers</h3>
+        <h1>{manufacturers}</h1>
       </div>
 
-      <div
-        style={{
-          background: lowStockCount > 0 ? "#dc2626" : "#1f2937",
-          padding: "20px",
-          borderRadius: "12px",
-          textAlign: "center",
-          color: "white"
-        }}
-      >
-        <h3 style={{ fontSize: "14px", opacity: 0.7 }}>Low Stock Items</h3>
-        <p style={{ fontSize: "28px", fontWeight: "bold", margin: "10px 0" }}>
-          {lowStockCount}
-        </p>
+      <div style={cardStyle}>
+        <h3>Low Stock</h3>
+        <h1>{lowStock}</h1>
       </div>
+
     </div>
+
   );
+
 }

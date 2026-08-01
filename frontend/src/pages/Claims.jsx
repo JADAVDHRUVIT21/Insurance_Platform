@@ -4,190 +4,187 @@ import {
   getClaims,
   createClaim,
   updateClaim,
-  deleteClaim,
-  approveClaim,
-  rejectClaim
+  deleteClaim
 } from "../services/claimService";
 
-import ClaimForm from "../components/ClaimForm";
-import ClaimTable from "../components/ClaimTable";
 import ClaimCard from "../components/ClaimCard";
+import ClaimTable from "../components/ClaimTable";
+import ClaimForm from "../components/ClaimForm";
 import EditClaimDialog from "../components/EditClaimDialog";
 import DeleteClaimDialog from "../components/DeleteClaimDialog";
 
 export default function Claims() {
-
   const [claims, setClaims] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const [editOpen, setEditOpen] = useState(false);
-
-  const [deleteOpen, setDeleteOpen] = useState(false);
-
-  const [selectedClaim, setSelectedClaim] = useState(null);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [editingClaim, setEditingClaim] = useState(null);
+  const [deletingClaim, setDeletingClaim] = useState(null);
 
   useEffect(() => {
     loadClaims();
   }, []);
 
   const loadClaims = async () => {
-
     try {
+      setLoading(true);
 
       const res = await getClaims();
 
-      setClaims(res.claims || []);
+      setClaims(res.claims || res.data || res || []);
 
+      setError("");
     } catch (err) {
-
-      console.log(err);
-
+      console.error(err);
+      setError("Failed to load claims.");
+    } finally {
+      setLoading(false);
     }
-
   };
 
-  const handleCreate = async (claim) => {
+  const handleCreate = async (formData) => {
+    try {
+      await createClaim(formData);
 
-    await createClaim(claim);
+      setShowAddForm(false);
 
-    loadClaims();
-
+      await loadClaims();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to create claim.");
+    }
   };
 
-  const handleUpdate = async (claim) => {
-
-    await updateClaim(
-      selectedClaim.id,
-      claim
-    );
-
-    setEditOpen(false);
-
-    loadClaims();
-
-  };
-
+const handleUpdate = async (formData) => {
+  await updateClaim(editingClaim.id, formData);
+};
   const handleDelete = async (id) => {
+    try {
+      await deleteClaim(id);
 
-    await deleteClaim(id);
+      setDeletingClaim(null);
 
-    setDeleteOpen(false);
-
-    loadClaims();
-
-  };
-
-  const handleApprove = async (id) => {
-
-    await approveClaim(id);
-
-    loadClaims();
-
-  };
-
-  const handleReject = async (id) => {
-
-    await rejectClaim(id);
-
-    loadClaims();
-
+      await loadClaims();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete claim.");
+    }
   };
 
   const totalClaims = claims.length;
 
-  const approved = claims.filter(
-    c => c.status === "Approved"
+  const approvedCount = claims.filter(
+    (c) => c.status === "Approved"
   ).length;
 
-  const pending = claims.filter(
-    c => c.status === "Pending"
+  const pendingCount = claims.filter(
+    (c) => c.status === "Pending"
   ).length;
 
-  const rejected = claims.filter(
-    c => c.status === "Rejected"
+  const rejectedCount = claims.filter(
+    (c) => c.status === "Rejected"
   ).length;
 
-  return (
+  const totalAmount = claims.reduce(
+    (sum, c) =>
+      sum + Number(c.claim_amount || c.amount || 0),
+    0
+  );
 
-    <div style={{ padding: "30px" }}>
-
-      <h1>Health Insurance Claims</h1>
-
+  if (loading) {
+    return (
       <div
         style={{
-          display: "grid",
-          gridTemplateColumns:
-            "repeat(auto-fit,minmax(220px,1fr))",
-          gap: "20px",
-          marginBottom: "30px",
-          marginTop: "20px"
+          color: "white",
+          textAlign: "center",
+          padding: "50px"
         }}
       >
+        Loading Claims...
+      </div>
+    );
+  }
 
-        <ClaimCard
-          title="Total Claims"
-          value={totalClaims}
-          color="#2563eb"
-        />
+  return (
+    <div style={{ padding: "20px" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "30px"
+        }}
+      >
+        <h1 style={{ color: "white" }}>
+          📋 Claims Management
+        </h1>
 
-        <ClaimCard
-          title="Approved"
-          value={approved}
-          color="#16a34a"
-        />
-
-        <ClaimCard
-          title="Pending"
-          value={pending}
-          color="#eab308"
-        />
-
-        <ClaimCard
-          title="Rejected"
-          value={rejected}
-          color="#dc2626"
-        />
-
+        <button
+          onClick={() =>
+            setShowAddForm(!showAddForm)
+          }
+          style={{
+            background: "#2563eb",
+            color: "white",
+            border: "none",
+            padding: "12px 22px",
+            borderRadius: "8px",
+            cursor: "pointer"
+          }}
+        >
+          {showAddForm ? "Cancel" : "+ Add Claim"}
+        </button>
       </div>
 
-      <ClaimForm
-        onSubmit={handleCreate}
+      {error && (
+        <div
+          style={{
+            background: "#7f1d1d",
+            color: "#fecaca",
+            padding: "15px",
+            borderRadius: "8px",
+            marginBottom: "20px"
+          }}
+        >
+          {error}
+        </div>
+      )}
+
+      <ClaimCard
+        totalClaims={totalClaims}
+        approvedCount={approvedCount}
+        pendingCount={pendingCount}
+        rejectedCount={rejectedCount}
+        totalAmount={totalAmount}
       />
+
+      {showAddForm && (
+        <ClaimForm
+          onSubmit={handleCreate}
+          buttonText="Create Claim"
+        />
+      )}
 
       <ClaimTable
         claims={claims}
-        onEdit={(claim) => {
-          setSelectedClaim(claim);
-          setEditOpen(true);
-        }}
-        onDelete={(id) => {
-          const claim = claims.find(
-            c => c.id === id
-          );
-
-          setSelectedClaim(claim);
-
-          setDeleteOpen(true);
-        }}
-        onApprove={handleApprove}
-        onReject={handleReject}
+        onEdit={(claim) => setEditingClaim(claim)}
+        onDelete={(claim) => setDeletingClaim(claim)}
       />
 
       <EditClaimDialog
-        open={editOpen}
-        claim={selectedClaim}
-        onClose={() => setEditOpen(false)}
+        open={!!editingClaim}
+        claim={editingClaim}
+        onClose={() => setEditingClaim(null)}
         onUpdate={handleUpdate}
       />
 
       <DeleteClaimDialog
-        open={deleteOpen}
-        claim={selectedClaim}
-        onClose={() => setDeleteOpen(false)}
+        open={!!deletingClaim}
+        claim={deletingClaim}
+        onClose={() => setDeletingClaim(null)}
         onConfirm={handleDelete}
       />
-
     </div>
-
   );
-
 }

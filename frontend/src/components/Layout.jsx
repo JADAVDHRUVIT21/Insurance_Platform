@@ -1,8 +1,9 @@
+import { Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar";
-import Topbar from "./Topbar";
+import Header from "./Header";
 import "./Layout.css";
 
-export default function Layout({ children }) {
+export default function Layout() {
   return (
     <div className="layout">
 
@@ -10,10 +11,10 @@ export default function Layout({ children }) {
 
       <div className="main-content">
 
-        <Topbar />
+        <Header />
 
         <div className="page-content">
-          {children}
+          <Outlet />
         </div>
 
       </div>

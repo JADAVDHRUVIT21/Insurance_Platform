@@ -1,14 +1,12 @@
 export default function DeleteClaimDialog({
   open,
-  claim,
+ claim,
   onClose,
   onConfirm
 }) {
-
   if (!open || !claim) return null;
 
   return (
-
     <div
       style={{
         position: "fixed",
@@ -20,39 +18,52 @@ export default function DeleteClaimDialog({
         zIndex: 1000
       }}
     >
-
       <div
         style={{
-          background: "#111827",
-          padding: "30px",
-          borderRadius: "12px",
           width: "450px",
-          textAlign: "center"
+          maxWidth: "95%",
+          background: "#111827",
+          borderRadius: "12px",
+          padding: "30px",
+          textAlign: "center",
+          boxShadow: "0 8px 20px rgba(0,0,0,0.4)"
         }}
       >
-
         <h2
           style={{
-            color: "white"
+            color: "white",
+            marginBottom: "20px"
           }}
         >
-          Delete Claim
+          🗑 Delete Claim
         </h2>
 
         <p
           style={{
             color: "#d1d5db",
-            marginTop: "20px"
+            fontSize: "16px",
+            lineHeight: "26px"
           }}
         >
-          Are you sure you want to delete
-          <br />
-
-          <strong>
-            Claim #{claim.id}
-          </strong>
-          ?
+          Are you sure you want to delete this claim?
         </p>
+
+        <div
+          style={{
+            marginTop: "20px",
+            background: "#1f2937",
+            padding: "15px",
+            borderRadius: "8px",
+            color: "white"
+          }}
+        >
+          <strong>Claim ID:</strong> {claim.id}
+          <br />
+          <strong>Customer:</strong> {claim.customer_id}
+          <br />
+          <strong>Amount:</strong> ₹
+          {claim.claim_amount || claim.amount}
+        </div>
 
         <div
           style={{
@@ -62,11 +73,12 @@ export default function DeleteClaimDialog({
             marginTop: "30px"
           }}
         >
-
           <button
             onClick={onClose}
             style={{
-              padding: "10px 20px",
+              padding: "10px 22px",
+              background: "#6b7280",
+              color: "white",
               border: "none",
               borderRadius: "8px",
               cursor: "pointer"
@@ -78,7 +90,7 @@ export default function DeleteClaimDialog({
           <button
             onClick={() => onConfirm(claim.id)}
             style={{
-              padding: "10px 20px",
+              padding: "10px 22px",
               background: "#dc2626",
               color: "white",
               border: "none",
@@ -88,13 +100,8 @@ export default function DeleteClaimDialog({
           >
             Delete
           </button>
-
         </div>
-
       </div>
-
     </div>
-
   );
-
 }

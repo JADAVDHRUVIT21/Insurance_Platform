@@ -6,7 +6,10 @@ from app.extensions import db, bcrypt
 class User(db.Model):
     __tablename__ = "users"
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(
+        db.Integer,
+        primary_key=True
+    )
 
     name = db.Column(
         db.String(100),
@@ -68,5 +71,6 @@ class User(db.Model):
             "id": self.id,
             "name": self.name,
             "email": self.email,
-            "role": self.role
-        }
+            "role": self.role,
+            "created_at": self.created_at.isoformat() if self.created_at else None
+        }   

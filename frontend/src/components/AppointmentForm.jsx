@@ -1,7 +1,4 @@
 import { useState, useEffect } from "react";
-import { getCustomers } from "../services/customerService";
-import { getDoctors } from "../services/doctorService";
-import { getHospitals } from "../services/hospitalService";
 
 const initialState = {
   customer_id: "",
@@ -9,43 +6,38 @@ const initialState = {
   hospital_id: "",
   appointment_date: "",
   appointment_time: "",
-  status: "Scheduled",
   reason: "",
+  status: "Scheduled",
   notes: ""
 };
 
 export default function AppointmentForm({
   onSubmit,
+  customers = [],
+  doctors = [],
+  hospitals = [],
   initialData = null,
-  buttonText = "Save Appointment"
+  buttonText = "Book Appointment"
 }) {
-  const [form, setForm] = useState(initialData || initialState);
-  const [customers, setCustomers] = useState([]);
-  const [doctors, setDoctors] = useState([]);
-  const [hospitals, setHospitals] = useState([]);
-  const [loading, setLoading] = useState(true);
+
+  const [form, setForm] = useState(initialState);
 
   useEffect(() => {
-    fetchDropdownData();
-  }, []);
-
-  const fetchDropdownData = async () => {
-    try {
-      setLoading(true);
-      const [customersData, doctorsData, hospitalsData] = await Promise.all([
-        getCustomers(),
-        getDoctors(),
-        getHospitals()
-      ]);
-      setCustomers(customersData);
-      setDoctors(doctorsData);
-      setHospitals(hospitalsData);
-    } catch (error) {
-      console.error("Error fetching dropdown data:", error);
-    } finally {
-      setLoading(false);
+    if (initialData) {
+      setForm({
+        customer_id: initialData.customer_id || "",
+        doctor_id: initialData.doctor_id || "",
+        hospital_id: initialData.hospital_id || "",
+        appointment_date: initialData.appointment_date || "",
+        appointment_time: initialData.appointment_time || "",
+        reason: initialData.reason || "",
+        status: initialData.status || "Scheduled",
+        notes: initialData.notes || ""
+      });
+    } else {
+      setForm(initialState);
     }
-  };
+  }, [initialData]);
 
   const handleChange = (e) => {
     setForm({
@@ -56,15 +48,13 @@ export default function AppointmentForm({
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     onSubmit(form);
+
     if (!initialData) {
       setForm(initialState);
     }
   };
-
-  if (loading) {
-    return <div style={{ color: "white", padding: "20px" }}>Loading form data...</div>;
-  }
 
   return (
     <form
@@ -76,66 +66,78 @@ export default function AppointmentForm({
         marginBottom: "30px"
       }}
     >
-      <h2 style={{ color: "white", marginBottom: "20px" }}>
+
+      <h2
+        style={{
+          color: "white",
+          marginBottom: "20px"
+        }}
+      >
         Appointment Information
       </h2>
 
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+          gridTemplateColumns: "repeat(auto-fit,minmax(250px,1fr))",
           gap: "15px"
         }}
       >
-        {/* Customer Dropdown */}
+
         <select
           name="customer_id"
           value={form.customer_id}
           onChange={handleChange}
           required
-          style={{ padding: "10px" }}
         >
           <option value="">Select Customer</option>
+
           {customers.map((customer) => (
-            <option key={customer.id} value={customer.id}>
-              {customer.customer_name}
+            <option
+              key={customer.id}
+              value={customer.id}
+            >
+              {customer.full_name}
             </option>
           ))}
         </select>
 
-        {/* Doctor Dropdown */}
         <select
           name="doctor_id"
           value={form.doctor_id}
           onChange={handleChange}
           required
-          style={{ padding: "10px" }}
         >
           <option value="">Select Doctor</option>
+
           {doctors.map((doctor) => (
-            <option key={doctor.id} value={doctor.id}>
-              Dr. {doctor.doctor_name}
+            <option
+              key={doctor.id}
+              value={doctor.id}
+            >
+              {doctor.name}
             </option>
           ))}
         </select>
 
-        {/* Hospital Dropdown */}
         <select
           name="hospital_id"
           value={form.hospital_id}
           onChange={handleChange}
           required
-          style={{ padding: "10px" }}
         >
           <option value="">Select Hospital</option>
+
           {hospitals.map((hospital) => (
-            <option key={hospital.id} value={hospital.id}>
+            <option
+              key={hospital.id}
+              value={hospital.id}
+            >
               {hospital.hospital_name}
             </option>
           ))}
         </select>
 
-        {/* Appointment Date */}
         <input
           type="date"
           name="appointment_date"
@@ -144,7 +146,6 @@ export default function AppointmentForm({
           required
         />
 
-        {/* Appointment Time */}
         <input
           type="time"
           name="appointment_time"
@@ -153,42 +154,33 @@ export default function AppointmentForm({
           required
         />
 
-        {/* Status Dropdown */}
+        <input
+          type="text"
+          name="reason"
+          placeholder="Reason for Visit"
+          value={form.reason}
+          onChange={handleChange}
+          required
+        />
+
         <select
           name="status"
           value={form.status}
           onChange={handleChange}
-          required
-          style={{ padding: "10px" }}
         >
           <option value="Scheduled">Scheduled</option>
           <option value="Completed">Completed</option>
           <option value="Cancelled">Cancelled</option>
-          <option value="No-Show">No-Show</option>
         </select>
+
       </div>
 
-      {/* Reason for Visit */}
-      <input
-        type="text"
-        name="reason"
-        placeholder="Reason for Visit"
-        value={form.reason}
-        onChange={handleChange}
-        style={{
-          width: "100%",
-          marginTop: "15px",
-          padding: "10px"
-        }}
-      />
-
-      {/* Notes */}
       <textarea
         name="notes"
-        placeholder="Additional Notes"
+        rows="5"
+        placeholder="Notes"
         value={form.notes}
         onChange={handleChange}
-        rows="4"
         style={{
           width: "100%",
           marginTop: "15px",
@@ -202,14 +194,15 @@ export default function AppointmentForm({
           marginTop: "20px",
           background: "#2563eb",
           color: "white",
-          padding: "12px 24px",
           border: "none",
+          padding: "12px 24px",
           borderRadius: "8px",
           cursor: "pointer"
         }}
       >
         {buttonText}
       </button>
+
     </form>
   );
 }

@@ -7,16 +7,25 @@ const getToken = () => {
 };
 
 export const getAppointments = async () => {
+
   const res = await axios.get(API);
+
   return res.data;
+
 };
 
 export const getAppointment = async (id) => {
-  const res = await axios.get(API + "/" + id);
+
+  const res = await axios.get(
+    API + "/" + id
+  );
+
   return res.data;
+
 };
 
 export const createAppointment = async (appointment) => {
+
   const res = await axios.post(
     API + "/",
     appointment,
@@ -26,10 +35,16 @@ export const createAppointment = async (appointment) => {
       }
     }
   );
+
   return res.data;
+
 };
 
-export const updateAppointment = async (id, appointment) => {
+export const updateAppointment = async (
+  id,
+  appointment
+) => {
+
   const res = await axios.put(
     API + "/" + id,
     appointment,
@@ -39,10 +54,13 @@ export const updateAppointment = async (id, appointment) => {
       }
     }
   );
+
   return res.data;
+
 };
 
 export const deleteAppointment = async (id) => {
+
   const res = await axios.delete(
     API + "/" + id,
     {
@@ -51,18 +69,7 @@ export const deleteAppointment = async (id) => {
       }
     }
   );
-  return res.data;
-};
 
-export const updateAppointmentStatus = async (id, status) => {
-  const res = await axios.patch(
-    API + "/" + id + "/status",
-    { status },
-    {
-      headers: {
-        Authorization: `Bearer ${getToken()}`
-      }
-    }
-  );
   return res.data;
+
 };

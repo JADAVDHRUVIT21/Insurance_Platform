@@ -5,9 +5,51 @@ export default function ClaimTable({
   onApprove,
   onReject
 }) {
+  const thStyle = {
+    padding: "12px",
+    borderBottom: "1px solid #374151",
+    textAlign: "left"
+  };
+
+  const tdStyle = {
+    padding: "12px",
+    borderBottom: "1px solid #374151"
+  };
+
+  const buttonStyle = {
+    border: "none",
+    borderRadius: "6px",
+    padding: "8px 14px",
+    cursor: "pointer",
+    color: "white"
+  };
+
+  const getStatusStyle = (status) => {
+    switch (status) {
+      case "Approved":
+        return {
+          background: "#16a34a",
+          padding: "6px 12px",
+          borderRadius: "20px"
+        };
+
+      case "Rejected":
+        return {
+          background: "#dc2626",
+          padding: "6px 12px",
+          borderRadius: "20px"
+        };
+
+      default:
+        return {
+          background: "#d97706",
+          padding: "6px 12px",
+          borderRadius: "20px"
+        };
+    }
+  };
 
   return (
-
     <div
       style={{
         marginTop: "30px",
@@ -17,7 +59,6 @@ export default function ClaimTable({
         overflowX: "auto"
       }}
     >
-
       <h2
         style={{
           color: "white",
@@ -34,37 +75,22 @@ export default function ClaimTable({
           color: "white"
         }}
       >
-
         <thead>
-
           <tr>
-
-            <th>ID</th>
-
-            <th>Customer</th>
-
-            <th>Policy</th>
-
-            <th>Hospital</th>
-
-            <th>Diagnosis</th>
-
-            <th>Amount</th>
-
-            <th>Status</th>
-
-            <th>Actions</th>
-
+            <th style={thStyle}>ID</th>
+            <th style={thStyle}>Customer</th>
+            <th style={thStyle}>Policy</th>
+            <th style={thStyle}>Hospital</th>
+            <th style={thStyle}>Diagnosis</th>
+            <th style={thStyle}>Amount</th>
+            <th style={thStyle}>Status</th>
+            <th style={thStyle}>Actions</th>
           </tr>
-
         </thead>
 
         <tbody>
-
           {claims.length === 0 ? (
-
             <tr>
-
               <td
                 colSpan="8"
                 style={{
@@ -74,90 +100,91 @@ export default function ClaimTable({
               >
                 No Claims Found
               </td>
-
             </tr>
-
           ) : (
-
             claims.map((claim) => (
-
               <tr key={claim.id}>
+                <td style={tdStyle}>{claim.id}</td>
 
-                <td>{claim.id}</td>
+                <td style={tdStyle}>
+                  {claim.customer_id}
+                </td>
 
-                <td>{claim.customer_id}</td>
+                <td style={tdStyle}>
+                  {claim.policy_id}
+                </td>
 
-                <td>{claim.policy_id}</td>
+                <td style={tdStyle}>
+                  {claim.hospital_name}
+                </td>
 
-                <td>{claim.hospital_name}</td>
+                <td style={tdStyle}>
+                  {claim.diagnosis}
+                </td>
 
-                <td>{claim.diagnosis}</td>
+                <td style={tdStyle}>
+                  ₹{claim.claim_amount}
+                </td>
 
-                <td>₹{claim.claim_amount}</td>
+                <td style={tdStyle}>
+                  <span style={getStatusStyle(claim.status)}>
+                    {claim.status}
+                  </span>
+                </td>
 
-                <td>{claim.status}</td>
-
-                <td>
-
+                <td style={tdStyle}>
                   <button
                     onClick={() => onEdit(claim)}
+                    style={{
+                      ...buttonStyle,
+                      background: "#2563eb"
+                    }}
                   >
                     Edit
                   </button>
 
                   <button
-                    onClick={() => onDelete(claim.id)}
+                    onClick={() => onDelete(claim)}
                     style={{
+                      ...buttonStyle,
+                      background: "#dc2626",
                       marginLeft: "10px"
                     }}
                   >
                     Delete
                   </button>
 
-                  {claim.status === "Pending" && (
-
-                    <>
-
-                      <button
-                        onClick={() => onApprove(claim.id)}
-                        style={{
-                          marginLeft: "10px",
-                          background: "green",
-                          color: "white"
-                        }}
-                      >
-                        Approve
-                      </button>
-
-                      <button
-                        onClick={() => onReject(claim.id)}
-                        style={{
-                          marginLeft: "10px",
-                          background: "red",
-                          color: "white"
-                        }}
-                      >
-                        Reject
-                      </button>
-
-                    </>
-
+                  {claim.status === "Pending" && onApprove && (
+                    <button
+                      onClick={() => onApprove(claim.id)}
+                      style={{
+                        ...buttonStyle,
+                        background: "#16a34a",
+                        marginLeft: "10px"
+                      }}
+                    >
+                      Approve
+                    </button>
                   )}
 
+                  {claim.status === "Pending" && onReject && (
+                    <button
+                      onClick={() => onReject(claim.id)}
+                      style={{
+                        ...buttonStyle,
+                        background: "#b91c1c",
+                        marginLeft: "10px"
+                      }}
+                    >
+                      Reject
+                    </button>
+                  )}
                 </td>
-
               </tr>
-
             ))
-
           )}
-
         </tbody>
-
       </table>
-
     </div>
-
   );
-
 }

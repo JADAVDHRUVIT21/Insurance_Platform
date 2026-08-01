@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const initialState = {
   customer_id: "",
@@ -16,34 +16,55 @@ export default function ClaimForm({
   initialData = null,
   buttonText = "Submit Claim"
 }) {
+  const [form, setForm] = useState(initialState);
+  const [loading, setLoading] = useState(false);
 
-  const [form, setForm] = useState(
-    initialData || initialState
-  );
+  useEffect(() => {
+    if (initialData) {
+      setForm({
+        ...initialState,
+        ...initialData
+      });
+    } else {
+      setForm(initialState);
+    }
+  }, [initialData]);
 
   const handleChange = (e) => {
-
     setForm({
       ...form,
       [e.target.name]: e.target.value
     });
-
   };
 
-  const handleSubmit = (e) => {
-
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    onSubmit(form);
+    try {
+      setLoading(true);
 
-    if (!initialData) {
-      setForm(initialState);
+      await onSubmit(form);
+
+      if (!initialData) {
+        setForm(initialState);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
+  };
 
+  const inputStyle = {
+    padding: "12px",
+    borderRadius: "8px",
+    border: "1px solid #374151",
+    background: "#111827",
+    color: "white",
+    width: "100%"
   };
 
   return (
-
     <form
       onSubmit={handleSubmit}
       style={{
@@ -53,7 +74,6 @@ export default function ClaimForm({
         marginBottom: "30px"
       }}
     >
-
       <h2
         style={{
           color: "white",
@@ -71,13 +91,13 @@ export default function ClaimForm({
           gap: "15px"
         }}
       >
-
         <input
           type="number"
           name="customer_id"
           placeholder="Customer ID"
           value={form.customer_id}
           onChange={handleChange}
+          style={inputStyle}
           required
         />
 
@@ -87,6 +107,7 @@ export default function ClaimForm({
           placeholder="Policy ID"
           value={form.policy_id}
           onChange={handleChange}
+          style={inputStyle}
           required
         />
 
@@ -96,6 +117,7 @@ export default function ClaimForm({
           placeholder="Hospital Name"
           value={form.hospital_name}
           onChange={handleChange}
+          style={inputStyle}
           required
         />
 
@@ -105,6 +127,7 @@ export default function ClaimForm({
           placeholder="Diagnosis"
           value={form.diagnosis}
           onChange={handleChange}
+          style={inputStyle}
           required
         />
 
@@ -114,6 +137,7 @@ export default function ClaimForm({
           placeholder="Claim Amount"
           value={form.claim_amount}
           onChange={handleChange}
+          style={inputStyle}
           required
         />
 
@@ -122,6 +146,7 @@ export default function ClaimForm({
           name="admission_date"
           value={form.admission_date}
           onChange={handleChange}
+          style={inputStyle}
           required
         />
 
@@ -130,9 +155,9 @@ export default function ClaimForm({
           name="discharge_date"
           value={form.discharge_date}
           onChange={handleChange}
+          style={inputStyle}
           required
         />
-
       </div>
 
       <textarea
@@ -142,14 +167,15 @@ export default function ClaimForm({
         onChange={handleChange}
         rows="5"
         style={{
-          width: "100%",
+          ...inputStyle,
           marginTop: "15px",
-          padding: "10px"
+          resize: "vertical"
         }}
       />
 
       <button
         type="submit"
+        disabled={loading}
         style={{
           marginTop: "20px",
           background: "#2563eb",
@@ -157,14 +183,12 @@ export default function ClaimForm({
           padding: "12px 25px",
           border: "none",
           borderRadius: "8px",
-          cursor: "pointer"
+          cursor: "pointer",
+          opacity: loading ? 0.7 : 1
         }}
       >
-        {buttonText}
+        {loading ? "Please Wait..." : buttonText}
       </button>
-
     </form>
-
   );
-
 }

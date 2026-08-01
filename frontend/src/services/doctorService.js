@@ -2,76 +2,50 @@ import axios from "axios";
 
 const API = "http://127.0.0.1:5000/api/doctors";
 
-const getToken = () => {
-  return localStorage.getItem("token");
-};
+const authHeader = () => ({
+  headers: {
+    Authorization: `Bearer ${localStorage.getItem("token")}`
+  }
+});
 
 export const getDoctors = async () => {
-
-  const res = await axios.get(API);
-
+  const res = await axios.get(`${API}/`);
   return res.data;
-
 };
 
 export const getDoctor = async (id) => {
-
-  const res = await axios.get(
-    API + "/" + id
-  );
-
+  const res = await axios.get(`${API}/${id}`);
   return res.data;
-
 };
 
 export const createDoctor = async (doctor) => {
-
   const res = await axios.post(
-    API + "/",
+    `${API}/`,
     doctor,
-    {
-      headers: {
-        Authorization: `Bearer ${getToken()}`
-      }
-    }
+    authHeader()
   );
 
   return res.data;
-
 };
 
 export const updateDoctor = async (
   id,
   doctor
 ) => {
-
   const res = await axios.put(
-    API + "/" + id,
+    `${API}/${id}`,
     doctor,
-    {
-      headers: {
-        Authorization: `Bearer ${getToken()}`
-      }
-    }
+    authHeader()
   );
 
   return res.data;
-
 };
 
-export const deleteDoctor = async (
-  id
-) => {
-
+export const deleteDoctor = async (id) => {
   const res = await axios.delete(
-    API + "/" + id,
-    {
-      headers: {
-        Authorization: `Bearer ${getToken()}`
-      }
-    }
+    `${API}/${id}`,
+    authHeader()
   );
 
   return res.data;
-
 };

@@ -1,94 +1,88 @@
-import { useState, useEffect } from "react";
 import AppointmentForm from "./AppointmentForm";
 
 export default function EditAppointmentDialog({
-  isOpen,
-  onClose,
+  open,
   appointment,
+  customers,
+  doctors,
+  hospitals,
+  onClose,
   onUpdate
 }) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Prevent scroll when dialog is open
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
-    }
-    return () => {
-      document.body.style.overflow = "unset";
-    };
-  }, [isOpen]);
-
-  if (!isOpen) return null;
-
-  const handleSubmit = async (formData) => {
-    setIsSubmitting(true);
-    try {
-      await onUpdate(appointment.id, formData);
-      onClose();
-    } catch (error) {
-      console.error("Error updating appointment:", error);
-      alert("Failed to update appointment. Please try again.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  if (!open || !appointment) return null;
 
   return (
+
     <div
       style={{
         position: "fixed",
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: "rgba(0, 0, 0, 0.7)",
+        inset: 0,
+        background: "rgba(0,0,0,0.6)",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        zIndex: 1000,
-        padding: "20px"
+        zIndex: 1000
       }}
-      onClick={onClose}
     >
+
       <div
         style={{
-          backgroundColor: "#111827",
-          borderRadius: "16px",
-          maxWidth: "800px",
-          width: "100%",
-          maxHeight: "90vh",
-          overflowY: "auto",
-          padding: "30px",
-          position: "relative"
+          width: "900px",
+          maxWidth: "95%",
+          background: "#111827",
+          borderRadius: "12px",
+          padding: "25px"
         }}
-        onClick={(e) => e.stopPropagation()}
       >
-        <button
-          onClick={onClose}
+
+        <div
           style={{
-            position: "absolute",
-            top: "15px",
-            right: "20px",
-            background: "transparent",
-            border: "none",
-            color: "#9ca3af",
-            fontSize: "24px",
-            cursor: "pointer",
-            padding: "5px 10px"
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "20px"
           }}
         >
-          ✕
-        </button>
+
+          <h2
+            style={{
+              color: "white",
+              margin: 0
+            }}
+          >
+            Edit Appointment
+          </h2>
+
+          <button
+            onClick={onClose}
+            style={{
+              background: "#dc2626",
+              color: "white",
+              border: "none",
+              padding: "10px 18px",
+              borderRadius: "8px",
+              cursor: "pointer"
+            }}
+          >
+            Close
+          </button>
+
+        </div>
 
         <AppointmentForm
           initialData={appointment}
-          onSubmit={handleSubmit}
-          buttonText={isSubmitting ? "Updating..." : "Update Appointment"}
+          customers={customers}
+          doctors={doctors}
+          hospitals={hospitals}
+          buttonText="Update Appointment"
+          onSubmit={onUpdate}
         />
+
       </div>
+
     </div>
+
   );
+
 }

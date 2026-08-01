@@ -1,40 +1,18 @@
 export default function DeleteDoctorDialog({
   open,
   doctor,
-  onClose,
-  onConfirm
+  onConfirm,
+  onCancel
 }) {
-
   if (!open || !doctor) return null;
 
   return (
-
-    <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        background: "rgba(0,0,0,0.6)",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        zIndex: 1000
-      }}
-    >
-
-      <div
-        style={{
-          width: "420px",
-          background: "#111827",
-          borderRadius: "12px",
-          padding: "30px",
-          textAlign: "center"
-        }}
-      >
-
+    <div style={styles.overlay}>
+      <div style={styles.dialog}>
         <h2
           style={{
             color: "white",
-            marginBottom: "20px"
+            marginBottom: "15px"
           }}
         >
           Delete Doctor
@@ -43,59 +21,74 @@ export default function DeleteDoctorDialog({
         <p
           style={{
             color: "#d1d5db",
-            marginBottom: "30px"
+            marginBottom: "25px"
           }}
         >
           Are you sure you want to delete
           <br />
-
-          <strong>
-            {doctor.doctor_name}
-          </strong>
-
-          ?
+          <strong>{doctor.name}</strong> ?
         </p>
 
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            gap: "15px"
-          }}
-        >
-
+        <div style={styles.buttons}>
           <button
-            onClick={onClose}
-            style={{
-              padding: "10px 20px",
-              border: "none",
-              borderRadius: "8px",
-              cursor: "pointer"
-            }}
-          >
-            Cancel
-          </button>
-
-          <button
-            onClick={() => onConfirm(doctor.id)}
-            style={{
-              padding: "10px 20px",
-              border: "none",
-              borderRadius: "8px",
-              background: "#dc2626",
-              color: "white",
-              cursor: "pointer"
-            }}
+            onClick={onConfirm}
+            style={styles.delete}
           >
             Delete
           </button>
 
+          <button
+            onClick={onCancel}
+            style={styles.cancel}
+          >
+            Cancel
+          </button>
         </div>
-
       </div>
-
     </div>
-
   );
-
 }
+
+const styles = {
+  overlay: {
+    position: "fixed",
+    inset: 0,
+    background: "rgba(0,0,0,.6)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 999
+  },
+
+  dialog: {
+    background: "#1f2937",
+    padding: "30px",
+    borderRadius: "15px",
+    width: "420px",
+    textAlign: "center"
+  },
+
+  buttons: {
+    display: "flex",
+    justifyContent: "center",
+    gap: "15px"
+  },
+
+  delete: {
+    background: "#dc2626",
+    color: "white",
+    border: "none",
+    padding: "10px 22px",
+    borderRadius: "8px",
+    cursor: "pointer"
+  },
+
+  cancel: {
+    background: "#6b7280",
+    color: "white",
+    border: "none",
+    padding: "10px 22px",
+    borderRadius: "8px",
+    cursor: "pointer"
+  }
+};

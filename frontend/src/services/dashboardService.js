@@ -1,17 +1,65 @@
 import axios from "axios";
 
-const API = axios.create({
-  baseURL: "http://127.0.0.1:5000",
+const BASE_URL = "http://127.0.0.1:5000/api";
+
+const getToken = () => {
+  return localStorage.getItem("token");
+};
+
+const authHeaders = () => ({
+  headers: {
+    Authorization: `Bearer ${getToken()}`
+  }
 });
 
-export const getDashboard = async () => {
-  const token = localStorage.getItem("token");
+export const getDashboardData = async () => {
 
-  const response = await API.get("/api/dashboard/", {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const [
+    customers,
+    doctors,
+    hospitals,
+    medicines,
+    appointments,
+    companies
+  ] = await Promise.all([
 
-  return response.data;
+    axios.get(BASE_URL + "/customers/"),
+
+    axios.get(BASE_URL + "/doctors/"),
+
+    axios.get(BASE_URL + "/hospitals/"),
+
+    axios.get(BASE_URL + "/medicines/"),
+
+    axios.get(BASE_URL + "/appointments/"),
+
+    axios.get(
+      BASE_URL + "/companies/",
+      authHeaders()
+    )
+
+  ]);
+
+  return {
+
+    customers:
+      customers.data.customers || [],
+
+    doctors:
+      doctors.data.doctors || [],
+
+    hospitals:
+      hospitals.data.hospitals || [],
+
+    medicines:
+      medicines.data.medicines || [],
+
+    appointments:
+      appointments.data.appointments || [],
+
+    companies:
+      companies.data.companies || []
+
+  };
+
 };

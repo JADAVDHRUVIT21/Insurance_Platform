@@ -1,106 +1,169 @@
-import { useEffect, useState } from "react";
+  import { useEffect, useState } from "react";
 
-import CompanyForm from "../components/CompanyForm";
-import CompanyTable from "../components/CompanyTable";
+  import CompanyCard from "../components/CompanyCard";
+  import CompanyForm from "../components/CompanyForm";
+  import CompanyTable from "../components/CompanyTable";
+  import EditCompanyDialog from "../components/EditCompanyDialog";
+  import DeleteCompanyDialog from "../components/DeleteCompanyDialog";
 
-import {
-  getCompanies,
-  createCompany,
-  deleteCompany,
-} from "../services/companyService";
+  import {
+    getCompanies,
+    createCompany,
+    updateCompany,
+    deleteCompany
+  } from "../services/companyService";
 
-export default function Companies() {
+  export default function Companies() {
+    const [companies, setCompanies] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [showAddForm, setShowAddForm] = useState(false);
 
-  const [companies, setCompanies] = useState([]);
+    const [editingCompany, setEditingCompany] = useState(null);
+    const [deletingCompany, setDeletingCompany] = useState(null);
 
-  useEffect(() => {
-    loadCompanies();
-  }, []);
+    const [error, setError] = useState("");
 
-  const loadCompanies = async () => {
-    try {
-      const res = await getCompanies();
+    useEffect(() => {
+      fetchCompanies();
+    }, []);
 
-      setCompanies(res.companies);
+    const fetchCompanies = async () => {
+      try {
+        setLoading(true);
 
-    } catch (err) {
-      console.error(err);
+        const res = await getCompanies();
+
+        setCompanies(res.companies || []);
+
+        setError("");
+      } catch (err) {
+        console.error(err);
+        setError("Failed to load companies.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const handleCreate = async (data) => {
+      try {
+        await createCompany(data);
+        await fetchCompanies();
+        setShowAddForm(false);
+      } catch (err) {
+        console.error(err);
+        alert("Unable to create company.");
+      }
+    };
+
+    const handleUpdate = async (data) => {
+      try {
+        await updateCompany(editingCompany.id, data);
+        await fetchCompanies();
+        setEditingCompany(null);
+      } catch (err) {
+        console.error(err);
+        alert("Unable to update company.");
+      }
+    };
+
+    const handleDelete = async (id) => {
+      try {
+        await deleteCompany(id);
+        await fetchCompanies();
+        setDeletingCompany(null);
+      } catch (err) {
+        console.error(err);
+        alert("Unable to delete company.");
+      }
+    };
+
+    if (loading) {
+      return (
+        <div
+          style={{
+            color: "white",
+            textAlign: "center",
+            padding: "50px"
+          }}
+        >
+          Loading Companies...
+        </div>
+      );
     }
-  };
 
-  const saveCompany = async (company) => {
+    return (
+      <div style={{ padding: "20px" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "30px"
+          }}
+        >
+          <h1 style={{ color: "white" }}>
+            🏢 Company Management
+          </h1>
 
-    try {
+          <button
+            onClick={() => setShowAddForm(!showAddForm)}
+            style={{
+              background: "#2563eb",
+              color: "white",
+              border: "none",
+              padding: "12px 24px",
+              borderRadius: "8px",
+              cursor: "pointer"
+            }}
+          >
+            {showAddForm ? "Cancel" : "+ Add Company"}
+          </button>
+        </div>
 
-      await createCompany(company);
+        {error && (
+          <div
+            style={{
+              background: "#7f1d1d",
+              color: "#fecaca",
+              padding: "15px",
+              borderRadius: "8px",
+              marginBottom: "20px"
+            }}
+          >
+            {error}
+          </div>
+        )}
 
-      alert("Company Added Successfully");
+        <CompanyCard
+          totalCompanies={companies.length}
+        />
 
-      loadCompanies();
+        {showAddForm && (
+          <CompanyForm
+            onSubmit={handleCreate}
+            buttonText="Add Company"
+          />
+        )}
 
-    } catch (err) {
+        <CompanyTable
+          companies={companies}
+          onEdit={setEditingCompany}
+          onDelete={setDeletingCompany}
+        />
 
-      console.log(err);
+        <EditCompanyDialog
+          open={!!editingCompany}
+          company={editingCompany}
+          onClose={() => setEditingCompany(null)}
+          onUpdate={handleUpdate}
+        />
 
-      alert("Unable to add company");
-
-    }
-
-  };
-
-  const removeCompany = async (id) => {
-
-    if (!window.confirm("Delete this company?"))
-      return;
-
-    try {
-
-      await deleteCompany(id);
-
-      alert("Company Deleted");
-
-      loadCompanies();
-
-    } catch (err) {
-
-      console.log(err);
-
-      alert("Unable to delete company");
-
-    }
-
-  };
-
-  return (
-
-    <div
-      style={{
-        padding: "30px",
-        background: "#111827",
-        minHeight: "100vh"
-      }}
-    >
-
-      <h1
-        style={{
-          color: "white",
-          marginBottom: "30px"
-        }}
-      >
-        Company Management
-      </h1>
-
-      <CompanyForm
-        onSave={saveCompany}
-      />
-
-      <CompanyTable
-        companies={companies}
-        onDelete={removeCompany}
-      />
-
-    </div>
-
-  );
-
-}
+        <DeleteCompanyDialog
+          open={!!deletingCompany}
+          company={deletingCompany}
+          onClose={() => setDeletingCompany(null)}
+          onConfirm={handleDelete}
+        />
+      </div>
+    );
+  }

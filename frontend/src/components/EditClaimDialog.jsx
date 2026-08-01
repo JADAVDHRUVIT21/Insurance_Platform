@@ -6,11 +6,9 @@ export default function EditClaimDialog({
   onClose,
   onUpdate
 }) {
-
   if (!open || !claim) return null;
 
   return (
-
     <div
       style={{
         position: "fixed",
@@ -22,17 +20,17 @@ export default function EditClaimDialog({
         zIndex: 1000
       }}
     >
-
       <div
         style={{
-          width: "800px",
+          width: "850px",
           maxWidth: "95%",
           background: "#111827",
           borderRadius: "12px",
-          padding: "25px"
+          padding: "25px",
+          maxHeight: "90vh",
+          overflowY: "auto"
         }}
       >
-
         <div
           style={{
             display: "flex",
@@ -41,9 +39,13 @@ export default function EditClaimDialog({
             marginBottom: "20px"
           }}
         >
-
-          <h2 style={{ color: "white", margin: 0 }}>
-            Edit Claim
+          <h2
+            style={{
+              color: "white",
+              margin: 0
+            }}
+          >
+            ✏️ Edit Claim
           </h2>
 
           <button
@@ -52,14 +54,13 @@ export default function EditClaimDialog({
               background: "#ef4444",
               color: "white",
               border: "none",
-              padding: "8px 14px",
-              borderRadius: "6px",
+              padding: "10px 18px",
+              borderRadius: "8px",
               cursor: "pointer"
             }}
           >
             Close
           </button>
-
         </div>
 
         <ClaimForm
@@ -67,11 +68,7 @@ export default function EditClaimDialog({
           buttonText="Update Claim"
           onSubmit={onUpdate}
         />
-
       </div>
-
     </div>
-
   );
-
 }

@@ -7,16 +7,18 @@ export default function CustomerTable({
     <div
       style={{
         background: "#1f2937",
-        padding: "20px",
-        borderRadius: "12px",
-        marginTop: "25px",
-        overflowX: "auto"
+        padding: "25px",
+        borderRadius: "15px",
+        marginTop: "30px",
+        overflowX: "auto",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.25)"
       }}
     >
       <h2
         style={{
           color: "white",
-          marginBottom: "20px"
+          marginBottom: "20px",
+          fontSize: "24px"
         }}
       >
         Customer List
@@ -30,14 +32,18 @@ export default function CustomerTable({
         }}
       >
         <thead>
-          <tr>
-            <th style={{ padding: "12px" }}>ID</th>
-            <th style={{ padding: "12px" }}>Name</th>
-            <th style={{ padding: "12px" }}>Email</th>
-            <th style={{ padding: "12px" }}>Phone</th>
-            <th style={{ padding: "12px" }}>Gender</th>
-            <th style={{ padding: "12px" }}>City</th>
-            <th style={{ padding: "12px" }}>Actions</th>
+          <tr
+            style={{
+              background: "#374151"
+            }}
+          >
+            <th style={styles.th}>ID</th>
+            <th style={styles.th}>Full Name</th>
+            <th style={styles.th}>Email</th>
+            <th style={styles.th}>Phone</th>
+            <th style={styles.th}>Gender</th>
+            <th style={styles.th}>City</th>
+            <th style={styles.th}>Actions</th>
           </tr>
         </thead>
 
@@ -48,7 +54,8 @@ export default function CustomerTable({
                 colSpan="7"
                 style={{
                   textAlign: "center",
-                  padding: "20px"
+                  padding: "30px",
+                  color: "#9ca3af"
                 }}
               >
                 No Customers Found
@@ -59,57 +66,42 @@ export default function CustomerTable({
               <tr
                 key={customer.id}
                 style={{
-                  borderTop: "1px solid #374151"
+                  borderBottom: "1px solid #374151"
                 }}
               >
-                <td style={{ padding: "12px" }}>{customer.id}</td>
+                <td style={styles.td}>{customer.id}</td>
 
-                <td style={{ padding: "12px" }}>
+                <td style={styles.td}>
                   {customer.full_name}
                 </td>
 
-                <td style={{ padding: "12px" }}>
+                <td style={styles.td}>
                   {customer.email}
                 </td>
 
-                <td style={{ padding: "12px" }}>
+                <td style={styles.td}>
                   {customer.phone}
                 </td>
 
-                <td style={{ padding: "12px" }}>
+                <td style={styles.td}>
                   {customer.gender}
                 </td>
 
-                <td style={{ padding: "12px" }}>
+                <td style={styles.td}>
                   {customer.city}
                 </td>
 
-                <td style={{ padding: "12px" }}>
+                <td style={styles.td}>
                   <button
                     onClick={() => onEdit(customer)}
-                    style={{
-                      background: "#2563eb",
-                      color: "white",
-                      border: "none",
-                      padding: "8px 14px",
-                      borderRadius: "6px",
-                      cursor: "pointer",
-                      marginRight: "10px"
-                    }}
+                    style={styles.editButton}
                   >
                     Edit
                   </button>
 
                   <button
                     onClick={() => onDelete(customer.id)}
-                    style={{
-                      background: "#dc2626",
-                      color: "white",
-                      border: "none",
-                      padding: "8px 14px",
-                      borderRadius: "6px",
-                      cursor: "pointer"
-                    }}
+                    style={styles.deleteButton}
                   >
                     Delete
                   </button>
@@ -122,3 +114,38 @@ export default function CustomerTable({
     </div>
   );
 }
+
+const styles = {
+  th: {
+    padding: "14px",
+    textAlign: "left",
+    fontWeight: "bold",
+    color: "#ffffff"
+  },
+
+  td: {
+    padding: "14px",
+    color: "#e5e7eb"
+  },
+
+  editButton: {
+    background: "#2563eb",
+    color: "white",
+    border: "none",
+    padding: "8px 16px",
+    borderRadius: "8px",
+    cursor: "pointer",
+    marginRight: "10px",
+    fontWeight: "600"
+  },
+
+  deleteButton: {
+    background: "#dc2626",
+    color: "white",
+    border: "none",
+    padding: "8px 16px",
+    borderRadius: "8px",
+    cursor: "pointer",
+    fontWeight: "600"
+  }
+};

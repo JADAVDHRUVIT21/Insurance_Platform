@@ -14,11 +14,13 @@ import EditDoctorDialog from "../components/EditDoctorDialog";
 import DeleteDoctorDialog from "../components/DeleteDoctorDialog";
 
 export default function Doctors() {
-
   const [doctors, setDoctors] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const [showForm, setShowForm] = useState(false);
 
   const [editOpen, setEditOpen] = useState(false);
-
   const [deleteOpen, setDeleteOpen] = useState(false);
 
   const [selectedDoctor, setSelectedDoctor] = useState(null);
@@ -28,50 +30,65 @@ export default function Doctors() {
   }, []);
 
   const loadDoctors = async () => {
-
     try {
+      setLoading(true);
 
       const res = await getDoctors();
 
       setDoctors(res.doctors || []);
 
+      setError("");
     } catch (err) {
-
       console.log(err);
-
+      setError("Unable to load doctors.");
+    } finally {
+      setLoading(false);
     }
-
   };
 
   const handleCreate = async (doctor) => {
+    try {
+      await createDoctor(doctor);
 
-    await createDoctor(doctor);
+      setShowForm(false);
 
-    loadDoctors();
+      loadDoctors();
 
+      alert("Doctor Added Successfully");
+    } catch (err) {
+      console.log(err);
+      alert("Unable to add doctor");
+    }
   };
 
   const handleUpdate = async (doctor) => {
+    try {
+      await updateDoctor(selectedDoctor.id, doctor);
 
-    await updateDoctor(
-      selectedDoctor.id,
-      doctor
-    );
+      setEditOpen(false);
 
-    setEditOpen(false);
+      loadDoctors();
 
-    loadDoctors();
-
+      alert("Doctor Updated Successfully");
+    } catch (err) {
+      console.log(err);
+      alert("Unable to update doctor");
+    }
   };
 
   const handleDelete = async (id) => {
+    try {
+      await deleteDoctor(id);
 
-    await deleteDoctor(id);
+      setDeleteOpen(false);
 
-    setDeleteOpen(false);
+      loadDoctors();
 
-    loadDoctors();
-
+      alert("Doctor Deleted Successfully");
+    } catch (err) {
+      console.log(err);
+      alert("Unable to delete doctor");
+    }
   };
 
   const totalDoctors = doctors.length;
@@ -88,11 +105,54 @@ export default function Doctors() {
     (d) => Number(d.experience) >= 5
   ).length;
 
+  if (loading) {
+    return (
+      <h2
+        style={{
+          color: "white",
+          textAlign: "center",
+          marginTop: "50px"
+        }}
+      >
+        Loading Doctors...
+      </h2>
+    );
+  }
+
   return (
+    <div style={{ padding: "25px" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "25px"
+        }}
+      >
+        <h1 style={{ color: "white" }}>
+          Doctor Management
+        </h1>
 
-    <div style={{ padding: "30px" }}>
+        <button
+          onClick={() => setShowForm(!showForm)}
+          style={{
+            background: "#2563eb",
+            color: "white",
+            border: "none",
+            padding: "12px 20px",
+            borderRadius: "8px",
+            cursor: "pointer"
+          }}
+        >
+          {showForm ? "Close" : "Add Doctor"}
+        </button>
+      </div>
 
-      <h1>Doctors</h1>
+      {error && (
+        <p style={{ color: "red" }}>
+          {error}
+        </p>
+      )}
 
       <div
         style={{
@@ -100,11 +160,9 @@ export default function Doctors() {
           gridTemplateColumns:
             "repeat(auto-fit,minmax(220px,1fr))",
           gap: "20px",
-          marginTop: "20px",
           marginBottom: "30px"
         }}
       >
-
         <DoctorCard
           title="Total Doctors"
           value={totalDoctors}
@@ -112,7 +170,7 @@ export default function Doctors() {
         />
 
         <DoctorCard
-          title="Hospitals Covered"
+          title="Hospitals"
           value={totalHospitals}
           color="#16a34a"
         />
@@ -124,28 +182,26 @@ export default function Doctors() {
         />
 
         <DoctorCard
-          title="Experienced Doctors"
+          title="Experienced"
           value={experiencedDoctors}
           color="#ea580c"
         />
-
       </div>
 
-      <DoctorForm
-        onSubmit={handleCreate}
-      />
+      {showForm && (
+        <DoctorForm
+          onSubmit={handleCreate}
+          buttonText="Save Doctor"
+        />
+      )}
 
       <DoctorTable
         doctors={doctors}
         onEdit={(doctor) => {
-
           setSelectedDoctor(doctor);
-
           setEditOpen(true);
-
         }}
         onDelete={(id) => {
-
           const doctor = doctors.find(
             (d) => d.id === id
           );
@@ -153,7 +209,6 @@ export default function Doctors() {
           setSelectedDoctor(doctor);
 
           setDeleteOpen(true);
-
         }}
       />
 
@@ -170,9 +225,6 @@ export default function Doctors() {
         onClose={() => setDeleteOpen(false)}
         onConfirm={handleDelete}
       />
-
     </div>
-
   );
-
 }

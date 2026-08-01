@@ -1,179 +1,131 @@
-import { useState, useEffect } from "react";
-import {
-  getMedicines,
-  createMedicine,
-  updateMedicine,
-  deleteMedicine
-} from "../services/medicineService";
-import MedicineCard from "../components/MedicineCard";
-import MedicineTable from "../components/MedicineTable";
-import MedicineForm from "../components/MedicineForm";
-import EditMedicineDialog from "../components/EditMedicineDialog";
-import DeleteMedicineDialog from "../components/DeleteMedicineDialog";
+  import { useEffect, useState } from "react";
 
-export default function Medicines() {
-  const [medicines, setMedicines] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [editingMedicine, setEditingMedicine] = useState(null);
-  const [deletingMedicine, setDeletingMedicine] = useState(null);
-  const [error, setError] = useState("");
+  import {
+    getMedicines,
+    createMedicine,
+    updateMedicine,
+    deleteMedicine
+  } from "../services/medicineService";
 
-  // Fetch all medicines on component mount
-  useEffect(() => {
-    fetchMedicines();
-  }, []);
+  import MedicineForm from "../components/MedicineForm";
+  import MedicineTable from "../components/MedicineTable";
+  import MedicineCard from "../components/MedicineCard";
+  import EditMedicineDialog from "../components/EditMedicineDialog";
+  import DeleteMedicineDialog from "../components/DeleteMedicineDialog";
 
-  const fetchMedicines = async () => {
-    try {
-      setLoading(true);
-      const data = await getMedicines();
-      setMedicines(data);
-      setError("");
-    } catch (err) {
-      console.error("Error fetching medicines:", err);
-      setError("Failed to load medicines. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  export default function Medicines() {
 
-  // Calculate statistics for MedicineCard
-  const totalMedicines = medicines.length;
-  const totalStock = medicines.reduce(
-    (sum, med) => sum + parseInt(med.stock_quantity || 0),
-    0
-  );
-  const totalManufacturers = new Set(
-    medicines.map(med => med.manufacturer).filter(Boolean)
-  ).size;
-  const lowStockCount = medicines.filter(
-    med => parseInt(med.stock_quantity || 0) < 10
-  ).length;
+    const [medicines, setMedicines] = useState([]);
 
-  // Handle Create
-  const handleCreate = async (formData) => {
-    try {
-      await createMedicine(formData);
-      await fetchMedicines();
-      setShowAddForm(false);
-    } catch (err) {
-      console.error("Error creating medicine:", err);
-      alert("Failed to create medicine. Please try again.");
-    }
-  };
+    const [editOpen, setEditOpen] = useState(false);
 
-  // Handle Update
-  const handleUpdate = async (id, formData) => {
-    try {
-      await updateMedicine(id, formData);
-      await fetchMedicines();
-      setEditingMedicine(null);
-    } catch (err) {
-      console.error("Error updating medicine:", err);
-      alert("Failed to update medicine. Please try again.");
-    }
-  };
+    const [deleteOpen, setDeleteOpen] = useState(false);
 
-  // Handle Delete
-  const handleDelete = async (id) => {
-    try {
+    const [selectedMedicine, setSelectedMedicine] = useState(null);
+
+    useEffect(() => {
+      loadMedicines();
+    }, []);
+
+    const loadMedicines = async () => {
+
+      try {
+
+        const res = await getMedicines();
+
+        setMedicines(res.medicines || []);
+
+      } catch (err) {
+
+        console.log(err);
+
+      }
+
+    };
+
+    const handleCreate = async (medicine) => {
+
+      await createMedicine(medicine);
+
+      loadMedicines();
+
+    };
+
+    const handleUpdate = async (medicine) => {
+
+      await updateMedicine(
+        selectedMedicine.id,
+        medicine
+      );
+
+      setEditOpen(false);
+
+      loadMedicines();
+
+    };
+
+    const handleDelete = async (id) => {
+
       await deleteMedicine(id);
-      await fetchMedicines();
-      setDeletingMedicine(null);
-    } catch (err) {
-      console.error("Error deleting medicine:", err);
-      alert("Failed to delete medicine. Please try again.");
-    }
-  };
 
-  if (loading) {
+      setDeleteOpen(false);
+
+      loadMedicines();
+
+    };
+
     return (
-      <div style={{ color: "white", textAlign: "center", padding: "50px" }}>
-        Loading medicines...
-      </div>
-    );
-  }
 
-  return (
-    <div style={{ padding: "20px" }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "30px"
-        }}
-      >
-        <h1 style={{ color: "white" }}>💊 Medicines Management</h1>
-        <button
-          onClick={() => setShowAddForm(!showAddForm)}
-          style={{
-            background: "#2563eb",
-            color: "white",
-            border: "none",
-            padding: "12px 24px",
-            borderRadius: "8px",
-            cursor: "pointer",
-            fontSize: "16px"
-          }}
-        >
-          {showAddForm ? "Cancel" : "+ Add New Medicine"}
-        </button>
-      </div>
+      <div style={{ padding: "30px" }}>
 
-      {error && (
-        <div
-          style={{
-            background: "#7f1d1d",
-            color: "#fca5a5",
-            padding: "15px",
-            borderRadius: "8px",
-            marginBottom: "20px"
-          }}
-        >
-          {error}
-        </div>
-      )}
+        <h1>Medicines</h1>
 
-      {/* Medicine Cards */}
-      <MedicineCard
-        totalMedicines={totalMedicines}
-        totalStock={totalStock}
-        totalManufacturers={totalManufacturers}
-        lowStockCount={lowStockCount}
-      />
+        <MedicineCard
+          medicines={medicines}
+        />
 
-      {/* Add Medicine Form */}
-      {showAddForm && (
         <MedicineForm
           onSubmit={handleCreate}
-          buttonText="Add Medicine"
         />
-      )}
 
-      {/* Medicine Table */}
-      <MedicineTable
-        medicines={medicines}
-        onEdit={setEditingMedicine}
-        onDelete={setDeletingMedicine}
-      />
+        <MedicineTable
+          medicines={medicines}
+          onEdit={(medicine) => {
 
-      {/* Edit Dialog */}
-      <EditMedicineDialog
-        isOpen={!!editingMedicine}
-        onClose={() => setEditingMedicine(null)}
-        medicine={editingMedicine}
-        onUpdate={handleUpdate}
-      />
+            setSelectedMedicine(medicine);
 
-      {/* Delete Dialog */}
-      <DeleteMedicineDialog
-        isOpen={!!deletingMedicine}
-        onClose={() => setDeletingMedicine(null)}
-        medicine={deletingMedicine}
-        onDelete={handleDelete}
-      />
-    </div>
-  );
-}
+            setEditOpen(true);
+
+          }}
+          onDelete={(id) => {
+
+            const medicine = medicines.find(
+              (m) => m.id === id
+            );
+
+            setSelectedMedicine(medicine);
+
+            setDeleteOpen(true);
+
+          }}
+        />
+
+        <EditMedicineDialog
+          open={editOpen}
+          medicine={selectedMedicine}
+          onClose={() => setEditOpen(false)}
+          onUpdate={handleUpdate}
+        />
+
+        <DeleteMedicineDialog
+          open={deleteOpen}
+          medicine={selectedMedicine}
+          onClose={() => setDeleteOpen(false)}
+          onConfirm={handleDelete}
+        />
+
+      </div>
+
+    );
+
+  }

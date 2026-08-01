@@ -1,82 +1,58 @@
 import DoctorForm from "./DoctorForm";
 
 export default function EditDoctorDialog({
-  open,
   doctor,
-  onClose,
-  onUpdate
+  onSave,
+  onCancel
 }) {
-
-  if (!open || !doctor) return null;
+  if (!doctor) return null;
 
   return (
-
-    <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        background: "rgba(0,0,0,0.6)",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        zIndex: 1000
-      }}
-    >
-
-      <div
-        style={{
-          width: "900px",
-          maxWidth: "95%",
-          background: "#111827",
-          padding: "25px",
-          borderRadius: "12px"
-        }}
-      >
-
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: "20px"
-          }}
-        >
-
-          <h2
-            style={{
-              color: "white",
-              margin: 0
-            }}
-          >
-            Edit Doctor
-          </h2>
-
-          <button
-            onClick={onClose}
-            style={{
-              background: "#ef4444",
-              color: "white",
-              border: "none",
-              padding: "8px 16px",
-              borderRadius: "6px",
-              cursor: "pointer"
-            }}
-          >
-            Close
-          </button>
-
-        </div>
-
+    <div style={styles.overlay}>
+      <div style={styles.dialog}>
         <DoctorForm
           initialData={doctor}
+          onSubmit={onSave}
           buttonText="Update Doctor"
-          onSubmit={onUpdate}
         />
 
+        <button
+          onClick={onCancel}
+          style={styles.cancel}
+        >
+          Cancel
+        </button>
       </div>
-
     </div>
-
   );
-
 }
+
+const styles = {
+  overlay: {
+    position: "fixed",
+    inset: 0,
+    background: "rgba(0,0,0,0.6)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 999
+  },
+
+  dialog: {
+    width: "700px",
+    maxWidth: "95%",
+    background: "#1f2937",
+    padding: "25px",
+    borderRadius: "15px"
+  },
+
+  cancel: {
+    marginTop: "15px",
+    background: "#6b7280",
+    color: "white",
+    border: "none",
+    padding: "12px 22px",
+    borderRadius: "8px",
+    cursor: "pointer"
+  }
+};

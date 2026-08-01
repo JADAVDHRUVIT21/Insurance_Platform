@@ -1,16 +1,33 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-export default function CompanyForm({ onSave }) {
-  const [company, setCompany] = useState({
-    company_name: "",
-    company_code: "",
-    email: "",
-    phone: "",
-    website: "",
-    address: "",
-    city: "",
-    state: ""
-  });
+const initialState = {
+  company_name: "",
+  company_code: "",
+  email: "",
+  phone: "",
+  website: "",
+  address: "",
+  city: "",
+  state: ""
+};
+
+export default function CompanyForm({
+  onSubmit,
+  initialData = null,
+  buttonText = "Save Company"
+}) {
+  const [company, setCompany] = useState(initialState);
+
+  useEffect(() => {
+    if (initialData) {
+      setCompany({
+        ...initialState,
+        ...initialData
+      });
+    } else {
+      setCompany(initialState);
+    }
+  }, [initialData]);
 
   const handleChange = (e) => {
     setCompany({
@@ -22,18 +39,11 @@ export default function CompanyForm({ onSave }) {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    onSave(company);
+    onSubmit(company);
 
-    setCompany({
-      company_name: "",
-      company_code: "",
-      email: "",
-      phone: "",
-      website: "",
-      address: "",
-      city: "",
-      state: ""
-    });
+    if (!initialData) {
+      setCompany(initialState);
+    }
   };
 
   return (
@@ -45,15 +55,23 @@ export default function CompanyForm({ onSave }) {
         marginBottom: "30px"
       }}
     >
-      <h2 style={{ color: "white", marginBottom: "20px" }}>
-        Add New Insurance Company
+      <h2
+        style={{
+          color: "white",
+          marginBottom: "20px"
+        }}
+      >
+        {initialData
+          ? "Edit Insurance Company"
+          : "Add New Insurance Company"}
       </h2>
 
       <form onSubmit={handleSubmit}>
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit,minmax(250px,1fr))",
+            gridTemplateColumns:
+              "repeat(auto-fit,minmax(250px,1fr))",
             gap: "15px"
           }}
         >
@@ -73,8 +91,8 @@ export default function CompanyForm({ onSave }) {
           />
 
           <input
-            name="email"
             type="email"
+            name="email"
             placeholder="Email"
             value={company.email}
             onChange={handleChange}
@@ -113,7 +131,9 @@ export default function CompanyForm({ onSave }) {
             placeholder="Address"
             value={company.address}
             onChange={handleChange}
-            style={{ gridColumn: "span 2" }}
+            style={{
+              gridColumn: "span 2"
+            }}
           />
         </div>
 
@@ -130,7 +150,7 @@ export default function CompanyForm({ onSave }) {
             fontWeight: "bold"
           }}
         >
-          Save Company
+          {buttonText}
         </button>
       </form>
     </div>

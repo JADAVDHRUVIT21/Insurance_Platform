@@ -1,205 +1,161 @@
-import { useEffect, useState } from "react";
-
+import { useState, useEffect } from "react";
 import {
   getPolicies,
   createPolicy,
   updatePolicy,
   deletePolicy
 } from "../services/policyService";
-
-import PolicyForm from "../components/PolicyForm";
-import PolicyTable from "../components/PolicyTable";
 import PolicyCard from "../components/PolicyCard";
+import PolicyTable from "../components/PolicyTable";
+import PolicyForm from "../components/PolicyForm";
 import EditPolicyDialog from "../components/EditPolicyDialog";
 import DeletePolicyDialog from "../components/DeletePolicyDialog";
 
 export default function Policies() {
-
   const [policies, setPolicies] = useState([]);
-
-  const [editOpen, setEditOpen] = useState(false);
-
-  const [deleteOpen, setDeleteOpen] = useState(false);
-
-  const [selectedPolicy, setSelectedPolicy] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [editingPolicy, setEditingPolicy] = useState(null);
+  const [deletingPolicy, setDeletingPolicy] = useState(null);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    loadPolicies();
+    fetchPolicies();
   }, []);
 
-  const loadPolicies = async () => {
-
+  const fetchPolicies = async () => {
     try {
-
-      const res = await getPolicies();
-
-      setPolicies(res.policies || []);
-
+      setLoading(true);
+      const data = await getPolicies();
+      setPolicies(data);
+      setError("");
     } catch (err) {
-
-      console.log(err);
-
+      console.error("Error fetching policies:", err);
+      setError("Failed to load policies. Please try again.");
+    } finally {
+      setLoading(false);
     }
-
   };
 
-  const handleCreate = async (policy) => {
+  // Calculate statistics
+  const totalPolicies = policies.length;
+  const activeCount = policies.filter(p => p.status === "Active").length;
+  const expiredCount = policies.filter(p => p.status === "Expired").length;
 
+  const handleCreate = async (formData) => {
     try {
-
-      await createPolicy(policy);
-
-      loadPolicies();
-
-      alert("Policy Created Successfully");
-
+      await createPolicy(formData);
+      await fetchPolicies();
+      setShowAddForm(false);
     } catch (err) {
-
-      alert("Unable to create policy");
-
+      console.error("Error creating policy:", err);
+      alert("Failed to create policy. Please try again.");
     }
-
   };
 
-  const handleUpdate = async (policy) => {
-
+  const handleUpdate = async (id, formData) => {
     try {
-
-      await updatePolicy(selectedPolicy.id, policy);
-
-      setEditOpen(false);
-
-      loadPolicies();
-
-      alert("Policy Updated Successfully");
-
+      await updatePolicy(id, formData);
+      await fetchPolicies();
+      setEditingPolicy(null);
     } catch (err) {
-
-      alert("Update Failed");
-
+      console.error("Error updating policy:", err);
+      alert("Failed to update policy. Please try again.");
     }
-
   };
 
   const handleDelete = async (id) => {
-
     try {
-
       await deletePolicy(id);
-
-      setDeleteOpen(false);
-
-      loadPolicies();
-
-      alert("Policy Deleted Successfully");
-
+      await fetchPolicies();
+      setDeletingPolicy(null);
     } catch (err) {
-
-      alert("Delete Failed");
-
+      console.error("Error deleting policy:", err);
+      alert("Failed to delete policy. Please try again.");
     }
-
   };
 
-  const activePolicies = policies.filter(
-    p => p.status === "Active"
-  ).length;
-
-  const inactivePolicies = policies.filter(
-    p => p.status === "Inactive"
-  ).length;
-
-  const averagePremium =
-    policies.length === 0
-      ? 0
-      : (
-          policies.reduce(
-            (sum, p) =>
-              sum + Number(p.premium_amount || 0),
-            0
-          ) / policies.length
-        ).toFixed(2);
+  if (loading) {
+    return (
+      <div style={{ color: "white", textAlign: "center", padding: "50px" }}>
+        Loading policies...
+      </div>
+    );
+  }
 
   return (
-
-    <div style={{ padding: "30px" }}>
-
-      <h1>Health Insurance Policies</h1>
-
+    <div style={{ padding: "20px" }}>
       <div
         style={{
-          display: "grid",
-          gridTemplateColumns:
-            "repeat(auto-fit,minmax(220px,1fr))",
-          gap: "20px",
-          marginTop: "20px",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
           marginBottom: "30px"
         }}
       >
-
-        <PolicyCard
-          title="Total Policies"
-          value={policies.length}
-          color="#2563eb"
-        />
-
-        <PolicyCard
-          title="Active Policies"
-          value={activePolicies}
-          color="#16a34a"
-        />
-
-        <PolicyCard
-          title="Inactive Policies"
-          value={inactivePolicies}
-          color="#dc2626"
-        />
-
-        <PolicyCard
-          title="Average Premium"
-          value={`₹${averagePremium}`}
-          color="#9333ea"
-        />
-
+        <h1 style={{ color: "white" }}>📑 Policies Management</h1>
+        <button
+          onClick={() => setShowAddForm(!showAddForm)}
+          style={{
+            background: "#2563eb",
+            color: "white",
+            border: "none",
+            padding: "12px 24px",
+            borderRadius: "8px",
+            cursor: "pointer",
+            fontSize: "16px"
+          }}
+        >
+          {showAddForm ? "Cancel" : "+ Add New Policy"}
+        </button>
       </div>
 
-      <PolicyForm
-        onSubmit={handleCreate}
+      {error && (
+        <div
+          style={{
+            background: "#7f1d1d",
+            color: "#fca5a5",
+            padding: "15px",
+            borderRadius: "8px",
+            marginBottom: "20px"
+          }}
+        >
+          {error}
+        </div>
+      )}
+
+      <PolicyCard
+        totalPolicies={totalPolicies}
+        activeCount={activeCount}
+        expiredCount={expiredCount}
       />
+
+      {showAddForm && (
+        <PolicyForm
+          onSubmit={handleCreate}
+          buttonText="Add Policy"
+        />
+      )}
 
       <PolicyTable
         policies={policies}
-        onEdit={(policy) => {
-          setSelectedPolicy(policy);
-          setEditOpen(true);
-        }}
-        onDelete={(id) => {
-          const policy = policies.find(
-            p => p.id === id
-          );
-
-          setSelectedPolicy(policy);
-
-          setDeleteOpen(true);
-        }}
+        onEdit={setEditingPolicy}
+        onDelete={setDeletingPolicy}
       />
 
       <EditPolicyDialog
-        open={editOpen}
-        policy={selectedPolicy}
-        onClose={() => setEditOpen(false)}
+        isOpen={!!editingPolicy}
+        onClose={() => setEditingPolicy(null)}
+        policy={editingPolicy}
         onUpdate={handleUpdate}
       />
 
       <DeletePolicyDialog
-        open={deleteOpen}
-        policy={selectedPolicy}
-        onClose={() => setDeleteOpen(false)}
-        onConfirm={handleDelete}
+        isOpen={!!deletingPolicy}
+        onClose={() => setDeletingPolicy(null)}
+        policy={deletingPolicy}
+        onDelete={handleDelete}
       />
-
     </div>
-
   );
-
 }

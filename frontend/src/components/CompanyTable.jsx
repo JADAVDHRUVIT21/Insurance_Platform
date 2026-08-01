@@ -1,5 +1,6 @@
 export default function CompanyTable({
   companies,
+  onEdit,
   onDelete
 }) {
 
@@ -10,7 +11,8 @@ export default function CompanyTable({
         marginTop: "30px",
         background: "#1f2937",
         borderRadius: "15px",
-        padding: "20px"
+        padding: "20px",
+        overflowX: "auto"
       }}
     >
 
@@ -44,7 +46,7 @@ export default function CompanyTable({
             <th style={styles.th}>Phone</th>
             <th style={styles.th}>City</th>
             <th style={styles.th}>State</th>
-            <th style={styles.th}>Action</th>
+            <th style={styles.th}>Actions</th>
           </tr>
 
         </thead>
@@ -105,6 +107,13 @@ export default function CompanyTable({
                 <td style={styles.td}>
 
                   <button
+                    style={styles.edit}
+                    onClick={() => onEdit(company)}
+                  >
+                    Edit
+                  </button>
+
+                  <button
                     style={styles.delete}
                     onClick={() => onDelete(company.id)}
                   >
@@ -138,6 +147,16 @@ const styles = {
 
   td: {
     padding: "12px"
+  },
+
+  edit: {
+    background: "#2563eb",
+    color: "white",
+    border: "none",
+    padding: "8px 15px",
+    borderRadius: "8px",
+    cursor: "pointer",
+    marginRight: "10px"
   },
 
   delete: {
