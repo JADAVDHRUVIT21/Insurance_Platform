@@ -103,7 +103,10 @@ class Doctor(db.Model):
             "experience": self.experience,
             "consultation_fee": float(self.consultation_fee or 0),
             "hospital_id": self.hospital_id,
-            "hospital_name": self.hospital.name if self.hospital else None,
+
+            # FIXED LINE
+            "hospital_name": self.hospital.hospital_name if self.hospital else None,
+
             "address": self.address,
             "city": self.city,
             "state": self.state,

@@ -1,8 +1,9 @@
 from flask import jsonify
+import traceback
 
 
 def register_error_handlers(app):
-
+    print("CUSTOM ERROR HANDLER LOADED")
     @app.errorhandler(400)
     def bad_request(error):
         return jsonify({
@@ -31,9 +32,13 @@ def register_error_handlers(app):
             "message": "Resource Not Found"
         }), 404
 
-    @app.errorhandler(500)
-    def server_error(error):
+    @app.errorhandler(Exception)
+    def handle_exception(error):
+        print("\n========== ERROR ==========")
+        traceback.print_exc()
+        print("===========================\n")
+
         return jsonify({
             "status": "error",
-            "message": "Internal Server Error"
+            "message": str(error)
         }), 500
