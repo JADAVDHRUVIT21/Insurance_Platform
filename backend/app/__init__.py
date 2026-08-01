@@ -48,16 +48,53 @@ def create_app():
     # -----------------------------
     app.config.from_object(Config)
 
+    app.url_map.strict_slashes = False
+
     # -----------------------------
-    # Extensions
+    # Initialize Extensions
     # -----------------------------
     db.init_app(app)
     migrate.init_app(app, db)
     jwt.init_app(app)
     bcrypt.init_app(app)
-    cors.init_app(app)
+
+    cors.init_app(
+        app,
+        resources={
+            r"/api/*": {
+                "origins": [
+                    "http://localhost:5173",
+                    "http://127.0.0.1:5173"
+                ]
+            }
+        },
+        supports_credentials=True
+    )
 
     swagger.init_app(app)
+
+    # -----------------------------
+    # JWT Error Handlers
+    # -----------------------------
+    @jwt.invalid_token_loader
+    def invalid_token_callback(error):
+        print("JWT INVALID TOKEN:", error)
+        return {"message": error}, 401
+
+    @jwt.unauthorized_loader
+    def unauthorized_callback(error):
+        print("JWT UNAUTHORIZED:", error)
+        return {"message": error}, 401
+
+    @jwt.expired_token_loader
+    def expired_token_callback(jwt_header, jwt_payload):
+        print("JWT TOKEN EXPIRED")
+        return {"message": "Token has expired"}, 401
+
+    @jwt.revoked_token_loader
+    def revoked_token_callback(jwt_header, jwt_payload):
+        print("JWT TOKEN REVOKED")
+        return {"message": "Token has been revoked"}, 401
 
     # -----------------------------
     # Register Blueprints
@@ -84,7 +121,6 @@ def create_app():
     app.register_blueprint(document_bp)
     app.register_blueprint(claim_approval_bp)
     app.register_blueprint(admin_dashboard_bp)
-    
 
     # -----------------------------
     # Error Handlers

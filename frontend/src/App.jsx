@@ -5,6 +5,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import Profile from "./pages/Profile";
 
 import Companies from "./pages/Companies";
 import Customers from "./pages/Customers";
@@ -19,6 +20,7 @@ import Appointments from "./pages/Appointments";
 function App() {
   return (
     <Routes>
+
       {/* Public Route */}
       <Route path="/login" element={<Login />} />
 
@@ -32,21 +34,37 @@ function App() {
         }
       >
         <Route index element={<Dashboard />} />
+
         <Route path="dashboard" element={<Dashboard />} />
 
+        <Route path="profile" element={<Profile />} />
+
         <Route path="companies" element={<Companies />} />
+
         <Route path="customers" element={<Customers />} />
+
         <Route path="policies" element={<Policies />} />
+
         <Route path="claims" element={<Claims />} />
+
         <Route path="payments" element={<PremiumPayments />} />
+
         <Route path="hospitals" element={<Hospitals />} />
+
         <Route path="doctors" element={<Doctors />} />
+
         <Route path="medicines" element={<Medicines />} />
+
         <Route path="appointments" element={<Appointments />} />
+
       </Route>
 
       {/* Catch All */}
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route
+        path="*"
+        element={<Navigate to="/" replace />}
+      />
+
     </Routes>
   );
 }

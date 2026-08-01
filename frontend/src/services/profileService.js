@@ -2,18 +2,23 @@ import axios from "axios";
 
 const API = "http://127.0.0.1:5000/api/profile";
 
-const authHeader = () => ({
-  headers: {
-    Authorization: `Bearer ${localStorage.getItem("token")}`
-  }
-});
+const authHeader = () => {
+  const token = localStorage.getItem("token");
+
+  console.log("TOKEN =", token);
+
+  return {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  };
+};
 
 export const getProfile = async () => {
   const res = await axios.get(API + "/", authHeader());
   return res.data;
 };
 
-// Temporary placeholders until backend APIs exist
 export const updateProfile = async () => {
   throw new Error("Update Profile API not implemented.");
 };
