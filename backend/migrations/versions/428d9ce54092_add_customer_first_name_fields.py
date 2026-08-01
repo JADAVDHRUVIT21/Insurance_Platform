@@ -16,32 +16,22 @@ down_revision = 'b6ab1b08707f'
 branch_labels = None
 depends_on = None
 
-
 def upgrade():
+    pass
+    # with op.batch_alter_table('customers', schema=None) as batch_op:
 
-    with op.batch_alter_table('customers', schema=None) as batch_op:
-
-        # Add only new columns
-        batch_op.add_column(
-            sa.Column(
-                'first_name',
-                sa.String(length=100),
-                nullable=True
-            )
-        )
-
-        batch_op.add_column(
-            sa.Column(
-                'last_name',
-                sa.String(length=100),
-                nullable=True
-            )
-        )
-
+    #     batch_op.add_column(
+    #         sa.Column(
+    #             'last_name',
+    #             sa.String(length=100),
+    #             nullable=True
+    #         )
+    #     )
 
 def downgrade():
+    pass
 
-    with op.batch_alter_table('customers', schema=None) as batch_op:
+    # with op.batch_alter_table('customers', schema=None) as batch_op:
 
-        batch_op.drop_column('last_name')
-        batch_op.drop_column('first_name')
+    #     batch_op.drop_column('last_name')
+    #     batch_op.drop_column('first_name')
