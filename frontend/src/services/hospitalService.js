@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API = "http://127.0.0.1:5000/api/hospitals";
+const API = `${import.meta.env.VITE_BASE_URL}/hospitals`;
 
 const getToken = () => {
   return localStorage.getItem("token");

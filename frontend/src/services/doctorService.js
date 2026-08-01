@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API = "http://127.0.0.1:5000/api/doctors";
+const API = `${import.meta.env.VITE_BASE_URL}/doctors`;
 
 const authHeader = () => ({
   headers: {
