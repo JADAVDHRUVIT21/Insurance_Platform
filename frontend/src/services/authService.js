@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API = `${import.meta.env.VITE_BASE_URL}/auth`;
+const API = `/auth`;
 
 // ==============================
 // Login

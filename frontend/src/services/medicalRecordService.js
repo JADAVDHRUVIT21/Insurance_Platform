@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API = `${import.meta.env.VITE_BASE_URL}/medical-records`;
+const API = `/medical-records`;
 
 const getToken = () => {
   return localStorage.getItem("token");

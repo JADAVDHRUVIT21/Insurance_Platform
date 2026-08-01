@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API = `${import.meta.env.VITE_BASE_URL}/policies`;
+const API = `/policies`;
 
 const getToken = () => localStorage.getItem("token");
 
