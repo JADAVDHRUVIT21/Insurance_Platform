@@ -1,163 +1,238 @@
 import { useState } from "react";
 
-export default function ProfileCard({ profile, onUploadPicture, onDeletePicture }) {
-  const [isUploading, setIsUploading] = useState(false);
+export default function ProfileCard({
+  profile,
+  onUploadPicture,
+  onDeletePicture,
+}) {
+  const [uploading, setUploading] = useState(false);
 
   const handleFileChange = async (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setIsUploading(true);
-      try {
-        await onUploadPicture(file);
-      } catch (error) {
-        console.error("Error uploading picture:", error);
-      } finally {
-        setIsUploading(false);
-      }
+    const file = e.target.files?.[0];
+
+    if (!file) return;
+
+    try {
+      setUploading(true);
+      await onUploadPicture(file);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to upload image");
+    } finally {
+      setUploading(false);
+      e.target.value = "";
     }
   };
+
+  const imageUrl =
+    profile?.profile_picture ||
+    profile?.profileImage ||
+    profile?.image ||
+    null;
 
   return (
     <div
       style={{
         background: "#1f2937",
-        padding: "30px",
-        borderRadius: "12px",
-        marginBottom: "30px",
+        borderRadius: 16,
+        padding: 30,
+        color: "#fff",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        color: "white"
+        boxShadow: "0 8px 20px rgba(0,0,0,0.25)",
       }}
     >
-      {/* Profile Picture */}
-      <div style={{ position: "relative", marginBottom: "20px" }}>
-        {profile?.profile_picture ? (
+      {/* ================= Profile Image ================= */}
+
+      <div
+        style={{
+          position: "relative",
+          width: 130,
+          height: 130,
+          marginBottom: 20,
+        }}
+      >
+        {imageUrl ? (
           <img
-            src={profile.profile_picture}
+            src={imageUrl}
             alt="Profile"
             style={{
-              width: "120px",
-              height: "120px",
+              width: "130px",
+              height: "130px",
               borderRadius: "50%",
               objectFit: "cover",
-              border: "4px solid #2563eb"
+              border: "4px solid #2563eb",
             }}
           />
         ) : (
           <div
             style={{
-              width: "120px",
-              height: "120px",
+              width: "130px",
+              height: "130px",
               borderRadius: "50%",
               background: "#374151",
               display: "flex",
-              alignItems: "center",
               justifyContent: "center",
-              fontSize: "48px",
-              border: "4px solid #2563eb"
+              alignItems: "center",
+              fontSize: 50,
+              fontWeight: "bold",
+              border: "4px solid #2563eb",
             }}
           >
-            {profile?.name ? profile.name.charAt(0).toUpperCase() : "?"}
+            {profile?.name
+              ? profile.name.charAt(0).toUpperCase()
+              : "U"}
           </div>
         )}
 
-        {/* Upload/Delete Picture Buttons */}
-        <div
+        {/* Upload Button */}
+
+        <label
           style={{
             position: "absolute",
-            bottom: "0",
-            right: "0",
+            right: 0,
+            bottom: 0,
+            width: 36,
+            height: 36,
+            background: "#2563eb",
+            borderRadius: "50%",
             display: "flex",
-            gap: "5px"
+            justifyContent: "center",
+            alignItems: "center",
+            cursor: "pointer",
+            fontSize: 18,
+            border: "2px solid white",
           }}
         >
-          <label
+          📷
+
+          <input
+            type="file"
+            accept="image/*"
+            style={{ display: "none" }}
+            disabled={uploading}
+            onChange={handleFileChange}
+          />
+        </label>
+
+        {/* Delete */}
+
+        {imageUrl && (
+          <button
+            onClick={onDeletePicture}
             style={{
-              background: "#2563eb",
-              color: "white",
-              padding: "6px 10px",
+              position: "absolute",
+              left: 0,
+              bottom: 0,
+              width: 36,
+              height: 36,
+              background: "#dc2626",
+              color: "#fff",
+              border: "2px solid white",
               borderRadius: "50%",
               cursor: "pointer",
-              fontSize: "16px",
-              width: "32px",
-              height: "32px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center"
+              fontSize: 16,
             }}
           >
-            📷
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              style={{ display: "none" }}
-              disabled={isUploading}
-            />
-          </label>
-          {profile?.profile_picture && (
-            <button
-              onClick={onDeletePicture}
-              style={{
-                background: "#dc2626",
-                color: "white",
-                border: "none",
-                padding: "6px 10px",
-                borderRadius: "50%",
-                cursor: "pointer",
-                fontSize: "16px",
-                width: "32px",
-                height: "32px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center"
-              }}
-            >
-              🗑️
-            </button>
-          )}
-        </div>
+            ✕
+          </button>
+        )}
       </div>
 
-      {isUploading && (
-        <div style={{ color: "#fbbf24", marginBottom: "10px" }}>
-          ⏳ Uploading...
-        </div>
+      {/* Upload Status */}
+
+      {uploading && (
+        <p
+          style={{
+            color: "#facc15",
+            marginBottom: 15,
+          }}
+        >
+          Uploading...
+        </p>
       )}
 
-      {/* User Information */}
-      <h2 style={{ fontSize: "24px", marginBottom: "5px" }}>
-        {profile?.name || "User Name"}
+      {/* ================= User Details ================= */}
+
+      <h2
+        style={{
+          margin: 0,
+          fontSize: 28,
+        }}
+      >
+        {profile?.name || "User"}
       </h2>
-      <p style={{ color: "#9ca3af", marginBottom: "15px" }}>
-        {profile?.role || "Role"} • {profile?.department || "Department"}
+
+      <p
+        style={{
+          color: "#9ca3af",
+          marginTop: 6,
+          marginBottom: 25,
+        }}
+      >
+        {profile?.role || "Employee"}
+        {" • "}
+        {profile?.department || "Department"}
       </p>
 
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
-          gap: "15px",
+          gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))",
+          gap: 20,
           width: "100%",
-          maxWidth: "400px",
-          marginTop: "10px"
         }}
       >
-        <div style={{ textAlign: "center" }}>
-          <div style={{ fontSize: "14px", color: "#9ca3af" }}>Email</div>
-          <div style={{ fontSize: "14px" }}>{profile?.email || "N/A"}</div>
-        </div>
-        <div style={{ textAlign: "center" }}>
-          <div style={{ fontSize: "14px", color: "#9ca3af" }}>Phone</div>
-          <div style={{ fontSize: "14px" }}>{profile?.phone || "N/A"}</div>
-        </div>
-        <div style={{ textAlign: "center" }}>
-          <div style={{ fontSize: "14px", color: "#9ca3af" }}>Member Since</div>
-          <div style={{ fontSize: "14px" }}>
-            {profile?.created_at ? new Date(profile.created_at).toLocaleDateString() : "N/A"}
-          </div>
-        </div>
+        <Info title="Email" value={profile?.email} />
+
+        <Info title="Phone" value={profile?.phone} />
+
+        <Info
+          title="Member Since"
+          value={
+            profile?.created_at
+              ? new Date(profile.created_at).toLocaleDateString()
+              : "N/A"
+          }
+        />
+
+        <Info title="City" value={profile?.city} />
+
+        <Info title="State" value={profile?.state} />
+
+        <Info title="Address" value={profile?.address} />
+      </div>
+    </div>
+  );
+}
+
+function Info({ title, value }) {
+  return (
+    <div
+      style={{
+        background: "#111827",
+        padding: 15,
+        borderRadius: 10,
+      }}
+    >
+      <div
+        style={{
+          color: "#9ca3af",
+          fontSize: 13,
+          marginBottom: 5,
+        }}
+      >
+        {title}
+      </div>
+
+      <div
+        style={{
+          fontWeight: 500,
+          wordBreak: "break-word",
+        }}
+      >
+        {value || "N/A"}
       </div>
     </div>
   );

@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
-import { getProfile } from "../services/profileService";
 import ProfileCard from "../components/ProfileCard";
+import {
+  getProfile,
+  uploadProfilePicture,
+  deleteProfilePicture,
+} from "../services/profileService";
 
 export default function Profile() {
   const [profile, setProfile] = useState(null);
@@ -17,7 +21,7 @@ export default function Profile() {
 
       const data = await getProfile();
 
-      setProfile(data.user);
+      setProfile(data.user || data.profile || data);
 
       setError("");
     } catch (err) {
@@ -28,13 +32,45 @@ export default function Profile() {
     }
   };
 
+  const handleUploadPicture = async (file) => {
+    try {
+      const formData = new FormData();
+      formData.append("profile_picture", file);
+
+      await uploadProfilePicture(formData);
+
+      await fetchProfile();
+
+      alert("Profile picture uploaded successfully.");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to upload profile picture.");
+    }
+  };
+
+  const handleDeletePicture = async () => {
+    if (!window.confirm("Delete profile picture?")) return;
+
+    try {
+      await deleteProfilePicture();
+
+      await fetchProfile();
+
+      alert("Profile picture deleted.");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete profile picture.");
+    }
+  };
+
   if (loading) {
     return (
       <div
         style={{
           color: "white",
           textAlign: "center",
-          padding: "50px"
+          padding: "60px",
+          fontSize: "20px",
         }}
       >
         Loading Profile...
@@ -43,11 +79,18 @@ export default function Profile() {
   }
 
   return (
-    <div style={{ padding: "20px" }}>
+    <div
+      style={{
+        padding: "30px",
+        maxWidth: "1100px",
+        margin: "0 auto",
+      }}
+    >
       <h1
         style={{
           color: "white",
-          marginBottom: "25px"
+          marginBottom: "30px",
+          fontSize: "32px",
         }}
       >
         👤 My Profile
@@ -59,15 +102,21 @@ export default function Profile() {
             background: "#7f1d1d",
             color: "#fecaca",
             padding: "15px",
-            borderRadius: "8px",
-            marginBottom: "20px"
+            borderRadius: "10px",
+            marginBottom: "20px",
           }}
         >
           {error}
         </div>
       )}
 
-      {profile && <ProfileCard profile={profile} />}
+      {profile && (
+        <ProfileCard
+          profile={profile}
+          onUploadPicture={handleUploadPicture}
+          onDeletePicture={handleDeletePicture}
+        />
+      )}
     </div>
   );
 }
