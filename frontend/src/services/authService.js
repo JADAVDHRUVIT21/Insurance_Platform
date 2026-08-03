@@ -5,14 +5,13 @@ const API = `${import.meta.env.VITE_BASE_URL}/auth`;
 // ==============================
 // Login
 // ==============================
-
 export const login = async (credentials) => {
-
+  // console.log("from login", API, credentials);
   const res = await axios.post(
     API + "/login",
     credentials
   );
-
+  console.log("res  ", res)
   // Save token
   localStorage.setItem(
     "token",

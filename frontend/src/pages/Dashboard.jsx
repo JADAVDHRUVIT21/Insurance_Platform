@@ -11,6 +11,19 @@ const getDashboardData = () => {
     companies: Array(9),
   });
 };
+// Generates a proper pie-slice polygon shape for accurate hover hit-testing
+const getSlicePolygon = (startPercent, endPercent) => {
+  const steps = Math.max(2, Math.ceil((endPercent - startPercent) / 2)); // more steps = smoother arc
+  const points = ["50% 50%"]; // center point
+  for (let i = 0; i <= steps; i++) {
+    const percent = startPercent + ((endPercent - startPercent) * i) / steps;
+    const theta = (percent / 100) * 2 * Math.PI; // 0deg = top, clockwise (matches conic-gradient)
+    const x = 50 + 50 * Math.sin(theta);
+    const y = 50 - 50 * Math.cos(theta);
+    points.push(`${x.toFixed(2)}% ${y.toFixed(2)}%`);
+  }
+  return `polygon(${points.join(", ")})`;
+};
 
 export default function Dashboard() {
   const [stats, setStats] = useState({
@@ -465,8 +478,7 @@ export default function Dashboard() {
                       width: "100%",
                       height: "100%",
                       borderRadius: "50%",
-                      clipPath: `conic-gradient(from ${startAngle * 3.6}deg, transparent 0deg, transparent ${angle * 3.6}deg)`,
-                      transition: "transform 0.2s",
+                      clipPath: getSlicePolygon(startAngle, startAngle + angle),  transition: "transform 0.2s",
                       transform: isHovered ? "scale(1.08)" : "scale(1)",
                     }}
                     onMouseEnter={(e) => {

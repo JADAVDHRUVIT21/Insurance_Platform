@@ -49,10 +49,7 @@ def create_app():
     app.config.from_object(Config)
 
     app.url_map.strict_slashes = False
-
-    # -----------------------------
-    # Initialize Extensions
-    # -----------------------------
+    
     db.init_app(app)
     migrate.init_app(app, db)
     jwt.init_app(app)

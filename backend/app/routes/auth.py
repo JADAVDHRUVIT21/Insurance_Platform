@@ -66,7 +66,7 @@ def register():
     """
 
     data = request.get_json()
-
+  
     if not data:
         return {"message": "No data received"}, 400
 

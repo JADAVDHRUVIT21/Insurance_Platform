@@ -17,7 +17,7 @@ class Config:
     )
 
     SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")
-
+    print(f"database url  {SQLALCHEMY_DATABASE_URI}")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     UPLOAD_FOLDER = "app/uploads"
