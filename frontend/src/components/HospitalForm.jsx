@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const initialState = {
   hospital_name: "",
@@ -17,48 +17,72 @@ export default function HospitalForm({
   initialData = null,
   buttonText = "Save Hospital"
 }) {
+  const [form, setForm] = useState(initialData || initialState);
+  const [loading, setLoading] = useState(false);
 
-  const [form, setForm] = useState(
-    initialData || initialState
-  );
+  useEffect(() => {
+    if (initialData) {
+      setForm({
+        ...initialState,
+        ...initialData
+      });
+    } else {
+      setForm(initialState);
+    }
+  }, [initialData]);
 
   const handleChange = (e) => {
-
     setForm({
       ...form,
       [e.target.name]: e.target.value
     });
-
   };
 
-  const handleSubmit = (e) => {
-
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    onSubmit(form);
+    try {
+      setLoading(true);
 
-    if (!initialData) {
-      setForm(initialState);
+      await onSubmit(form);
+
+      if (!initialData) {
+        setForm(initialState);
+      }
+    } finally {
+      setLoading(false);
     }
+  };
 
+  const inputStyle = {
+    width: "100%",
+    padding: "14px 16px",
+    background: "#111827",
+    color: "white",
+    border: "1px solid #374151",
+    borderRadius: "10px",
+    outline: "none",
+    fontSize: "15px",
+    boxSizing: "border-box"
   };
 
   return (
-
     <form
       onSubmit={handleSubmit}
       style={{
         background: "#1f2937",
-        padding: "25px",
-        borderRadius: "12px",
-        marginBottom: "30px"
+        padding: "30px",
+        borderRadius: "16px",
+        marginBottom: "30px",
+        boxShadow: "0 10px 25px rgba(0,0,0,.25)"
       }}
     >
-
       <h2
         style={{
           color: "white",
-          marginBottom: "20px"
+          marginBottom: "25px",
+          fontSize: "28px",
+          fontWeight: "700"
         }}
       >
         Hospital Information
@@ -67,18 +91,17 @@ export default function HospitalForm({
       <div
         style={{
           display: "grid",
-          gridTemplateColumns:
-            "repeat(auto-fit,minmax(250px,1fr))",
-          gap: "15px"
+          gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))",
+          gap: "20px"
         }}
       >
-
         <input
           type="text"
           name="hospital_name"
           placeholder="Hospital Name"
           value={form.hospital_name}
           onChange={handleChange}
+          style={inputStyle}
           required
         />
 
@@ -88,14 +111,16 @@ export default function HospitalForm({
           placeholder="Hospital Code"
           value={form.hospital_code}
           onChange={handleChange}
+          style={inputStyle}
         />
 
         <input
           type="email"
           name="email"
-          placeholder="Email"
+          placeholder="Email Address"
           value={form.email}
           onChange={handleChange}
+          style={inputStyle}
         />
 
         <input
@@ -104,14 +129,7 @@ export default function HospitalForm({
           placeholder="Phone Number"
           value={form.phone}
           onChange={handleChange}
-        />
-
-        <input
-          type="text"
-          name="address"
-          placeholder="Address"
-          value={form.address}
-          onChange={handleChange}
+          style={inputStyle}
         />
 
         <input
@@ -120,6 +138,7 @@ export default function HospitalForm({
           placeholder="City"
           value={form.city}
           onChange={handleChange}
+          style={inputStyle}
         />
 
         <input
@@ -128,6 +147,7 @@ export default function HospitalForm({
           placeholder="State"
           value={form.state}
           onChange={handleChange}
+          style={inputStyle}
         />
 
         <input
@@ -136,6 +156,7 @@ export default function HospitalForm({
           placeholder="Pincode"
           value={form.pincode}
           onChange={handleChange}
+          style={inputStyle}
         />
 
         <input
@@ -144,27 +165,50 @@ export default function HospitalForm({
           placeholder="Specialization"
           value={form.specialization}
           onChange={handleChange}
+          style={inputStyle}
         />
-
       </div>
 
-      <button
-        type="submit"
+      <div style={{ marginTop: "20px" }}>
+        <textarea
+          name="address"
+          placeholder="Hospital Address"
+          rows="5"
+          value={form.address}
+          onChange={handleChange}
+          style={{
+            ...inputStyle,
+            resize: "vertical"
+          }}
+        />
+      </div>
+
+      <div
         style={{
-          marginTop: "20px",
-          background: "#2563eb",
-          color: "white",
-          padding: "12px 24px",
-          border: "none",
-          borderRadius: "8px",
-          cursor: "pointer"
+          display: "flex",
+          justifyContent: "flex-end",
+          marginTop: "25px"
         }}
       >
-        {buttonText}
-      </button>
-
+        <button
+          type="submit"
+          disabled={loading}
+          style={{
+            background: "#2563eb",
+            color: "white",
+            border: "none",
+            padding: "14px 36px",
+            borderRadius: "10px",
+            cursor: "pointer",
+            fontSize: "16px",
+            fontWeight: "600",
+            transition: "0.3s",
+            opacity: loading ? 0.7 : 1
+          }}
+        >
+          {loading ? "Saving..." : buttonText}
+        </button>
+      </div>
     </form>
-
   );
-
-}
+} 

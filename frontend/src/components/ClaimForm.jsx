@@ -1,20 +1,17 @@
 import { useState, useEffect } from "react";
 
 const initialState = {
-  customer_id: "",
-  policy_id: "",
-  hospital_name: "",
-  diagnosis: "",
+  customer_policy_id: "",
+  claim_number: "",
   claim_amount: "",
-  admission_date: "",
-  discharge_date: "",
-  description: ""
+  claim_reason: "",
+  claim_date: ""
 };
 
 export default function ClaimForm({
   onSubmit,
   initialData = null,
-  buttonText = "Submit Claim"
+  buttonText = "Create Claim"
 }) {
   const [form, setForm] = useState(initialState);
   const [loading, setLoading] = useState(false);
@@ -56,12 +53,15 @@ export default function ClaimForm({
   };
 
   const inputStyle = {
-    padding: "12px",
-    borderRadius: "8px",
-    border: "1px solid #374151",
+    width: "100%",
+    padding: "14px 16px",
     background: "#111827",
     color: "white",
-    width: "100%"
+    border: "1px solid #374151",
+    borderRadius: "10px",
+    outline: "none",
+    fontSize: "15px",
+    boxSizing: "border-box"
   };
 
   return (
@@ -69,15 +69,18 @@ export default function ClaimForm({
       onSubmit={handleSubmit}
       style={{
         background: "#1f2937",
-        padding: "25px",
-        borderRadius: "12px",
-        marginBottom: "30px"
+        padding: "30px",
+        borderRadius: "16px",
+        marginBottom: "30px",
+        boxShadow: "0 10px 30px rgba(0,0,0,.25)"
       }}
     >
       <h2
         style={{
           color: "white",
-          marginBottom: "20px"
+          marginBottom: "25px",
+          fontSize: "28px",
+          fontWeight: "700"
         }}
       >
         Claim Information
@@ -86,26 +89,15 @@ export default function ClaimForm({
       <div
         style={{
           display: "grid",
-          gridTemplateColumns:
-            "repeat(auto-fit,minmax(250px,1fr))",
-          gap: "15px"
+          gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))",
+          gap: "20px"
         }}
       >
         <input
           type="number"
-          name="customer_id"
-          placeholder="Customer ID"
-          value={form.customer_id}
-          onChange={handleChange}
-          style={inputStyle}
-          required
-        />
-
-        <input
-          type="number"
-          name="policy_id"
-          placeholder="Policy ID"
-          value={form.policy_id}
+          name="customer_policy_id"
+          placeholder="Customer Policy ID"
+          value={form.customer_policy_id}
           onChange={handleChange}
           style={inputStyle}
           required
@@ -113,19 +105,9 @@ export default function ClaimForm({
 
         <input
           type="text"
-          name="hospital_name"
-          placeholder="Hospital Name"
-          value={form.hospital_name}
-          onChange={handleChange}
-          style={inputStyle}
-          required
-        />
-
-        <input
-          type="text"
-          name="diagnosis"
-          placeholder="Diagnosis"
-          value={form.diagnosis}
+          name="claim_number"
+          placeholder="Claim Number"
+          value={form.claim_number}
           onChange={handleChange}
           style={inputStyle}
           required
@@ -143,52 +125,55 @@ export default function ClaimForm({
 
         <input
           type="date"
-          name="admission_date"
-          value={form.admission_date}
-          onChange={handleChange}
-          style={inputStyle}
-          required
-        />
-
-        <input
-          type="date"
-          name="discharge_date"
-          value={form.discharge_date}
+          name="claim_date"
+          value={form.claim_date}
           onChange={handleChange}
           style={inputStyle}
           required
         />
       </div>
 
-      <textarea
-        name="description"
-        placeholder="Claim Description"
-        value={form.description}
-        onChange={handleChange}
-        rows="5"
-        style={{
-          ...inputStyle,
-          marginTop: "15px",
-          resize: "vertical"
-        }}
-      />
+      <div style={{ marginTop: "20px" }}>
+        <textarea
+          name="claim_reason"
+          placeholder="Claim Reason"
+          value={form.claim_reason}
+          onChange={handleChange}
+          rows="6"
+          style={{
+            ...inputStyle,
+            resize: "vertical"
+          }}
+          required
+        />
+      </div>
 
-      <button
-        type="submit"
-        disabled={loading}
+      <div
         style={{
-          marginTop: "20px",
-          background: "#2563eb",
-          color: "white",
-          padding: "12px 25px",
-          border: "none",
-          borderRadius: "8px",
-          cursor: "pointer",
-          opacity: loading ? 0.7 : 1
+          display: "flex",
+          justifyContent: "flex-end",
+          marginTop: "25px"
         }}
       >
-        {loading ? "Please Wait..." : buttonText}
-      </button>
+        <button
+          type="submit"
+          disabled={loading}
+          style={{
+            background: "#2563eb",
+            color: "white",
+            border: "none",
+            padding: "14px 35px",
+            borderRadius: "10px",
+            fontSize: "16px",
+            fontWeight: "600",
+            cursor: "pointer",
+            opacity: loading ? 0.7 : 1,
+            transition: "0.3s"
+          }}
+        >
+          {loading ? "Please Wait..." : buttonText}
+        </button>
+      </div>
     </form>
   );
 }

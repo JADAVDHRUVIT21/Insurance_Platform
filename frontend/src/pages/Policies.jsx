@@ -5,6 +5,7 @@ import {
   updatePolicy,
   deletePolicy
 } from "../services/policyService";
+
 import PolicyCard from "../components/PolicyCard";
 import PolicyTable from "../components/PolicyTable";
 import PolicyForm from "../components/PolicyForm";
@@ -26,21 +27,34 @@ export default function Policies() {
   const fetchPolicies = async () => {
     try {
       setLoading(true);
-      const data = await getPolicies();
-      setPolicies(data);
+
+      const response = await getPolicies();
+
+      setPolicies(
+        Array.isArray(response)
+          ? response
+          : response?.policies || []
+      );
+
       setError("");
     } catch (err) {
       console.error("Error fetching policies:", err);
-      setError("Failed to load policies. Please try again.");
+      setPolicies([]);
+      setError("Failed to load policies.");
     } finally {
       setLoading(false);
     }
   };
 
-  // Calculate statistics
   const totalPolicies = policies.length;
-  const activeCount = policies.filter(p => p.status === "Active").length;
-  const expiredCount = policies.filter(p => p.status === "Expired").length;
+
+  const activeCount = policies.filter(
+    (policy) => policy.status === "Active"
+  ).length;
+
+  const expiredCount = policies.filter(
+    (policy) => policy.status === "Expired"
+  ).length;
 
   const handleCreate = async (formData) => {
     try {
@@ -49,7 +63,7 @@ export default function Policies() {
       setShowAddForm(false);
     } catch (err) {
       console.error("Error creating policy:", err);
-      alert("Failed to create policy. Please try again.");
+      alert("Failed to create policy.");
     }
   };
 
@@ -60,7 +74,7 @@ export default function Policies() {
       setEditingPolicy(null);
     } catch (err) {
       console.error("Error updating policy:", err);
-      alert("Failed to update policy. Please try again.");
+      alert("Failed to update policy.");
     }
   };
 
@@ -71,14 +85,20 @@ export default function Policies() {
       setDeletingPolicy(null);
     } catch (err) {
       console.error("Error deleting policy:", err);
-      alert("Failed to delete policy. Please try again.");
+      alert("Failed to delete policy.");
     }
   };
 
   if (loading) {
     return (
-      <div style={{ color: "white", textAlign: "center", padding: "50px" }}>
-        Loading policies...
+      <div
+        style={{
+          color: "white",
+          textAlign: "center",
+          padding: "50px"
+        }}
+      >
+        Loading Policies...
       </div>
     );
   }
@@ -93,7 +113,10 @@ export default function Policies() {
           marginBottom: "30px"
         }}
       >
-        <h1 style={{ color: "white" }}>📑 Policies Management</h1>
+        <h1 style={{ color: "white" }}>
+          📑 Policies Management
+        </h1>
+
         <button
           onClick={() => setShowAddForm(!showAddForm)}
           style={{
@@ -103,10 +126,11 @@ export default function Policies() {
             padding: "12px 24px",
             borderRadius: "8px",
             cursor: "pointer",
-            fontSize: "16px"
+            fontSize: "16px",
+            fontWeight: "600"
           }}
         >
-          {showAddForm ? "Cancel" : "+ Add New Policy"}
+          {showAddForm ? "Cancel" : "+ Add Policy"}
         </button>
       </div>
 
@@ -114,7 +138,7 @@ export default function Policies() {
         <div
           style={{
             background: "#7f1d1d",
-            color: "#fca5a5",
+            color: "#fecaca",
             padding: "15px",
             borderRadius: "8px",
             marginBottom: "20px"
@@ -145,16 +169,20 @@ export default function Policies() {
 
       <EditPolicyDialog
         isOpen={!!editingPolicy}
-        onClose={() => setEditingPolicy(null)}
         policy={editingPolicy}
-        onUpdate={handleUpdate}
+        onClose={() => setEditingPolicy(null)}
+        onUpdate={(data) =>
+          handleUpdate(editingPolicy.id, data)
+        }
       />
 
       <DeletePolicyDialog
         isOpen={!!deletingPolicy}
-        onClose={() => setDeletingPolicy(null)}
         policy={deletingPolicy}
-        onDelete={handleDelete}
+        onClose={() => setDeletingPolicy(null)}
+        onDelete={() =>
+          handleDelete(deletingPolicy.id)
+        }
       />
     </div>
   );

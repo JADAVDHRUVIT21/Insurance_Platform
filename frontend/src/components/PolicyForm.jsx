@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const initialState = {
   policy_name: "",
@@ -19,10 +19,19 @@ export default function PolicyForm({
   initialData = null,
   buttonText = "Save Policy"
 }) {
+  const [form, setForm] = useState(initialState);
+  const [focused, setFocused] = useState("");
 
-  const [form, setForm] = useState(
-    initialData || initialState
-  );
+  useEffect(() => {
+    if (initialData) {
+      setForm({
+        ...initialState,
+        ...initialData
+      });
+    } else {
+      setForm(initialState);
+    }
+  }, [initialData]);
 
   const handleChange = (e) => {
     setForm({
@@ -41,152 +50,276 @@ export default function PolicyForm({
     }
   };
 
-  return (
+  const inputStyle = (name) => ({
+    width: "100%",
+    padding: "14px 16px",
+    background: "#111827",
+    color: "#fff",
+    border: focused === name ? "2px solid #2563eb" : "1px solid #374151",
+    borderRadius: "12px",
+    outline: "none",
+    fontSize: "15px",
+    transition: "0.25s",
+    boxSizing: "border-box"
+  });
 
-    <form
-      onSubmit={handleSubmit}
+  const labelStyle = {
+    color: "#d1d5db",
+    marginBottom: "8px",
+    display: "block",
+    fontWeight: "600",
+    fontSize: "14px"
+  };
+
+  return (
+    <div
       style={{
         background: "#1f2937",
-        padding: "25px",
-        borderRadius: "12px",
-        marginBottom: "30px"
+        padding: "35px",
+        borderRadius: "18px",
+        marginBottom: "30px",
+        boxShadow: "0 10px 25px rgba(0,0,0,.35)"
       }}
     >
-
-      <h2
-        style={{
-          color: "white",
-          marginBottom: "20px"
-        }}
-      >
-        Policy Information
-      </h2>
-
       <div
         style={{
-          display: "grid",
-          gridTemplateColumns:
-            "repeat(auto-fit,minmax(250px,1fr))",
-          gap: "15px"
+          display: "flex",
+          alignItems: "center",
+          gap: "15px",
+          marginBottom: "30px"
         }}
       >
-
-        <input
-          type="text"
-          name="policy_name"
-          placeholder="Policy Name"
-          value={form.policy_name}
-          onChange={handleChange}
-          required
-        />
-
-        <input
-          type="text"
-          name="policy_code"
-          placeholder="Policy Code"
-          value={form.policy_code}
-          onChange={handleChange}
-          required
-        />
-
-        <input
-          type="text"
-          name="company_name"
-          placeholder="Insurance Company"
-          value={form.company_name}
-          onChange={handleChange}
-          required
-        />
-
-        <input
-          type="number"
-          name="coverage_amount"
-          placeholder="Coverage Amount"
-          value={form.coverage_amount}
-          onChange={handleChange}
-          required
-        />
-
-        <input
-          type="number"
-          name="premium_amount"
-          placeholder="Premium Amount"
-          value={form.premium_amount}
-          onChange={handleChange}
-          required
-        />
-
-        <input
-          type="number"
-          name="duration_years"
-          placeholder="Duration (Years)"
-          value={form.duration_years}
-          onChange={handleChange}
-          required
-        />
-
-        <input
-          type="text"
-          name="waiting_period"
-          placeholder="Waiting Period"
-          value={form.waiting_period}
-          onChange={handleChange}
-        />
-
-        <input
-          type="number"
-          name="room_rent_limit"
-          placeholder="Room Rent Limit"
-          value={form.room_rent_limit}
-          onChange={handleChange}
-        />
-
-        <input
-          type="number"
-          name="icu_limit"
-          placeholder="ICU Limit"
-          value={form.icu_limit}
-          onChange={handleChange}
-        />
-
-        <select
-          name="cashless"
-          value={form.cashless}
-          onChange={handleChange}
+        <div
+          style={{
+            width: "58px",
+            height: "58px",
+            borderRadius: "14px",
+            background: "#2563eb",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            fontSize: "28px"
+          }}
         >
-          <option value="Yes">Yes</option>
-          <option value="No">No</option>
-        </select>
+          📑
+        </div>
 
-        <select
-          name="status"
-          value={form.status}
-          onChange={handleChange}
-        >
-          <option value="Active">Active</option>
-          <option value="Inactive">Inactive</option>
-          <option value="Expired">Expired</option>
-        </select>
+        <div>
+          <h2
+            style={{
+              color: "#fff",
+              margin: 0,
+              fontSize: "30px",
+              fontWeight: "700"
+            }}
+          >
+            {initialData ? "Edit Policy" : "Add New Policy"}
+          </h2>
 
+          <p
+            style={{
+              color: "#9ca3af",
+              marginTop: "5px",
+              marginBottom: 0
+            }}
+          >
+            Enter complete policy information.
+          </p>
+        </div>
       </div>
 
-      <button
-        type="submit"
-        style={{
-          marginTop: "20px",
-          background: "#2563eb",
-          color: "white",
-          border: "none",
-          padding: "12px 24px",
-          borderRadius: "8px",
-          cursor: "pointer"
-        }}
-      >
-        {buttonText}
-      </button>
+      <form onSubmit={handleSubmit}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))",
+            gap: "22px"
+          }}
+        >
+          <div>
+            <label style={labelStyle}>Policy Name</label>
+            <input
+              style={inputStyle("policy_name")}
+              onFocus={() => setFocused("policy_name")}
+              onBlur={() => setFocused("")}
+              name="policy_name"
+              value={form.policy_name}
+              onChange={handleChange}
+              placeholder="Health Insurance"
+              required
+            />
+          </div>
 
-    </form>
+          <div>
+            <label style={labelStyle}>Policy Code</label>
+            <input
+              style={inputStyle("policy_code")}
+              onFocus={() => setFocused("policy_code")}
+              onBlur={() => setFocused("")}
+              name="policy_code"
+              value={form.policy_code}
+              onChange={handleChange}
+              placeholder="POL001"
+              required
+            />
+          </div>
 
+          <div>
+            <label style={labelStyle}>Insurance Company</label>
+            <input
+              style={inputStyle("company_name")}
+              onFocus={() => setFocused("company_name")}
+              onBlur={() => setFocused("")}
+              name="company_name"
+              value={form.company_name}
+              onChange={handleChange}
+              placeholder="LIC India"
+              required
+            />
+          </div>
+
+          <div>
+            <label style={labelStyle}>Coverage Amount (₹)</label>
+            <input
+              type="number"
+              style={inputStyle("coverage_amount")}
+              onFocus={() => setFocused("coverage_amount")}
+              onBlur={() => setFocused("")}
+              name="coverage_amount"
+              value={form.coverage_amount}
+              onChange={handleChange}
+              placeholder="500000"
+              required
+            />
+          </div>
+
+          <div>
+            <label style={labelStyle}>Premium Amount (₹)</label>
+            <input
+              type="number"
+              style={inputStyle("premium_amount")}
+              onFocus={() => setFocused("premium_amount")}
+              onBlur={() => setFocused("")}
+              name="premium_amount"
+              value={form.premium_amount}
+              onChange={handleChange}
+              placeholder="12000"
+              required
+            />
+          </div>
+
+          <div>
+            <label style={labelStyle}>Duration (Years)</label>
+            <input
+              type="number"
+              style={inputStyle("duration_years")}
+              onFocus={() => setFocused("duration_years")}
+              onBlur={() => setFocused("")}
+              name="duration_years"
+              value={form.duration_years}
+              onChange={handleChange}
+              placeholder="5"
+              required
+            />
+          </div>
+
+          <div>
+            <label style={labelStyle}>Waiting Period</label>
+            <input
+              style={inputStyle("waiting_period")}
+              onFocus={() => setFocused("waiting_period")}
+              onBlur={() => setFocused("")}
+              name="waiting_period"
+              value={form.waiting_period}
+              onChange={handleChange}
+              placeholder="30 Days"
+            />
+          </div>
+
+          <div>
+            <label style={labelStyle}>Room Rent Limit</label>
+            <input
+              type="number"
+              style={inputStyle("room_rent_limit")}
+              onFocus={() => setFocused("room_rent_limit")}
+              onBlur={() => setFocused("")}
+              name="room_rent_limit"
+              value={form.room_rent_limit}
+              onChange={handleChange}
+              placeholder="5000"
+            />
+          </div>
+
+          <div>
+            <label style={labelStyle}>ICU Limit</label>
+            <input
+              type="number"
+              style={inputStyle("icu_limit")}
+              onFocus={() => setFocused("icu_limit")}
+              onBlur={() => setFocused("")}
+              name="icu_limit"
+              value={form.icu_limit}
+              onChange={handleChange}
+              placeholder="10000"
+            />
+          </div>
+
+          <div>
+            <label style={labelStyle}>Cashless Facility</label>
+            <select
+              style={inputStyle("cashless")}
+              onFocus={() => setFocused("cashless")}
+              onBlur={() => setFocused("")}
+              name="cashless"
+              value={form.cashless}
+              onChange={handleChange}
+            >
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+            </select>
+          </div>
+
+          <div>
+            <label style={labelStyle}>Status</label>
+            <select
+              style={inputStyle("status")}
+              onFocus={() => setFocused("status")}
+              onBlur={() => setFocused("")}
+              name="status"
+              value={form.status}
+              onChange={handleChange}
+            >
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+              <option value="Expired">Expired</option>
+            </select>
+          </div>
+        </div>
+
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            marginTop: "30px"
+          }}
+        >
+          <button
+            type="submit"
+            style={{
+              background: "#2563eb",
+              color: "#fff",
+              border: "none",
+              borderRadius: "10px",
+              padding: "14px 35px",
+              fontSize: "16px",
+              fontWeight: "700",
+              cursor: "pointer"
+            }}
+          >
+            {buttonText}
+          </button>
+        </div>
+      </form>
+    </div>
   );
-
 }

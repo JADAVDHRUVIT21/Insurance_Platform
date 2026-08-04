@@ -32,11 +32,23 @@ export default function Claims() {
 
       const res = await getClaims();
 
-      setClaims(res.claims || res.data || res || []);
+      console.log("Claims API Response:", res);
 
+      let claimList = [];
+
+      if (Array.isArray(res)) {
+        claimList = res;
+      } else if (Array.isArray(res.claims)) {
+        claimList = res.claims;
+      } else if (res.data && Array.isArray(res.data.claims)) {
+        claimList = res.data.claims;
+      }
+
+      setClaims(claimList);
       setError("");
     } catch (err) {
       console.error(err);
+      setClaims([]);
       setError("Failed to load claims.");
     } finally {
       setLoading(false);
@@ -46,9 +58,7 @@ export default function Claims() {
   const handleCreate = async (formData) => {
     try {
       await createClaim(formData);
-
       setShowAddForm(false);
-
       await loadClaims();
     } catch (err) {
       console.error(err);
@@ -56,15 +66,21 @@ export default function Claims() {
     }
   };
 
-const handleUpdate = async (formData) => {
-  await updateClaim(editingClaim.id, formData);
-};
+  const handleUpdate = async (formData) => {
+    try {
+      await updateClaim(editingClaim.id, formData);
+      setEditingClaim(null);
+      await loadClaims();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update claim.");
+    }
+  };
+
   const handleDelete = async (id) => {
     try {
       await deleteClaim(id);
-
       setDeletingClaim(null);
-
       await loadClaims();
     } catch (err) {
       console.error(err);
@@ -72,23 +88,24 @@ const handleUpdate = async (formData) => {
     }
   };
 
-  const totalClaims = claims.length;
+  const claimArray = Array.isArray(claims) ? claims : [];
 
-  const approvedCount = claims.filter(
+  const totalClaims = claimArray.length;
+
+  const approvedCount = claimArray.filter(
     (c) => c.status === "Approved"
   ).length;
 
-  const pendingCount = claims.filter(
+  const pendingCount = claimArray.filter(
     (c) => c.status === "Pending"
   ).length;
 
-  const rejectedCount = claims.filter(
+  const rejectedCount = claimArray.filter(
     (c) => c.status === "Rejected"
   ).length;
 
-  const totalAmount = claims.reduce(
-    (sum, c) =>
-      sum + Number(c.claim_amount || c.amount || 0),
+  const totalAmount = claimArray.reduce(
+    (sum, c) => sum + Number(c.claim_amount || c.amount || 0),
     0
   );
 
@@ -121,9 +138,7 @@ const handleUpdate = async (formData) => {
         </h1>
 
         <button
-          onClick={() =>
-            setShowAddForm(!showAddForm)
-          }
+          onClick={() => setShowAddForm(!showAddForm)}
           style={{
             background: "#2563eb",
             color: "white",
@@ -167,9 +182,9 @@ const handleUpdate = async (formData) => {
       )}
 
       <ClaimTable
-        claims={claims}
-        onEdit={(claim) => setEditingClaim(claim)}
-        onDelete={(claim) => setDeletingClaim(claim)}
+        claims={claimArray}
+        onEdit={setEditingClaim}
+        onDelete={setDeletingClaim}
       />
 
       <EditClaimDialog
